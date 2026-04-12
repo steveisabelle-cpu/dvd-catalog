@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="My DVDs"/>
+<title>My DVD Collection</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#f2f2f7;color:#111}
+header{background:#fff;border-bottom:1px solid #e0e0e0;padding:12px 16px 10px;position:sticky;top:0;z-index:10}
+header h1{font-size:17px;font-weight:700;margin-bottom:8px}
+#search{width:100%;padding:9px 14px;font-size:16px;border:1px solid #ddd;border-radius:10px;background:#f2f2f7;color:#111;-webkit-appearance:none}
+#search:focus{outline:none;border-color:#007aff;background:#fff}
+#stats{font-size:12px;color:#999;margin-top:6px}
+.sh{font-size:12px;font-weight:700;color:#888;letter-spacing:.08em;text-transform:uppercase;padding:8px 16px 4px;border-bottom:1px solid #e8e8e8;background:#f2f2f7;position:sticky;top:89px;z-index:5}
+.mr{display:flex;align-items:center;gap:12px;padding:8px 16px;border-bottom:1px solid #f0f0f0;background:#fff;min-height:68px}
+.num{font-size:11px;color:#c0c0c0;width:26px;text-align:right;flex-shrink:0}
+.pt{width:40px;height:60px;border-radius:5px;background:#e8e8e8;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.pt img{width:40px;height:60px;object-fit:cover;border-radius:5px;display:block}
+.pp{font-size:8px;color:#bbb;text-align:center;line-height:1.3;padding:3px;font-weight:700}
+.ti{font-size:15px;color:#111;flex:1;line-height:1.3}
+.nr{padding:60px 16px;text-align:center;color:#aaa;font-size:15px}
+@media(prefers-color-scheme:dark){
+body{background:#1c1c1e;color:#f0f0f0}
+header{background:#2c2c2e;border-bottom-color:#3a3a3c}
+#search{background:#3a3a3c;border-color:#3a3a3c;color:#f0f0f0}
+#search:focus{background:#48484a;border-color:#007aff}
+.sh{background:#1c1c1e;color:#888;border-bottom-color:#2c2c2e}
+.mr{background:#2c2c2e;border-bottom-color:#3a3a3c}
+.ti{color:#f0f0f0}
+.pt{background:#3a3a3c}}
+</style>
+</head>
+<body>
+<header>
+<h1>My DVD Collection</h1>
+<input type="search" id="search" placeholder="Search..." oninput="f()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+<div id="stats"></div>
+</header>
+<div id="list"></div>
+<script>
+const API='8670d5dc76f371b2ad77f98e626dfba2';
+const TITLES=["11.22.63","21","21 and Over","22 Jump Street","2012","30 Minutes or Less","50 First Dates","A Christmas Story","A Fistful of Dollars","A Million Ways to Die in the West","A Walk Among the Tombstones","Abraham Lincoln Vampire Hunter","Ad Astra","After Earth","Alien","Alien Covenant","Alien vs Predator","Aliens","American Gangster","American History X","American Hustle","American Pie","Annihilation","Ant-Man and the Wasp","Apollo 18","Aquaman","Austin Powers Goldmember","Avengers Age of Ultron","Avengers Endgame","Avatar","Batman vs Superman","Battleship","Baywatch","Bee Movie","Big Trouble in Little China","Bill and Ted's Bogus Journey","Bill and Ted's Excellent Adventure","Black Panther","Blade Runner","Bleeding Steel","Blended","Bloodshot","Blow","Boondock Saints","Brave","Bumblebee","Captain America The First Avenger","Captain America The Winter Soldier","Cast Away","Central Intelligence","Chicago","Chips","Civil War","Clash of the Titans","Cold Mountain","Collateral","Collateral Damage","Conan the Barbarian","Conan the Destroyer","Constantine","Contraband","Dawn of the Dead","Deadpool 2","Deliver Us","Despicable Me","Despicable Me 2","Despicable Me 3","Die Hard","Die Hard with a Vengeance","Dirty Grandpa","Divergent","Doctor Strange","Dolittle","Dragonheart","Due Date","Edward Scissorhands","Enemy of the State","Escape Plan","Eurotrip","Everything Must Go","Fantastic Beasts and Where to Find Them","Fantastic Beasts The Crimes of Grindelwald","Fast 5","Fast 6","Fast and Furious Hobbs and Shaw","Fast Times at Ridgemont High","Faster","Fear and Loathing in Las Vegas","Fight Club","First Man","Full Metal Jacket","Furious 7","G.I. Joe","Game Night","Gamer","Get Hard","Ghost in the Shell","Ghost Protocol","Godzilla","Gone in 60 Seconds","Goodfellas","Goon","Gravity","Groundhog Day","Grown Ups 2","Guardians of the Galaxy Vol 2","Hannibal","Happy Feet","Heartbreak Ridge","Hell Ride","Hercules","Herbie","Hitch","Homefront","Horrible Bosses","I Am Legend","Ice Age","Ice Age The Meltdown","Identity Thief","Immortals","Independence Day","Insurgent","Iron Man 3","J. Edgar","Jack Reacher","Jack Reacher Never Go Back","Jason Bourne","Jayne Mansfield's Car","Jeepers Creepers","Joe Dirt","John Wick","John Wick 2","John Wick 3","Jonah Hex","Jumanji","Jumanji Welcome to the Jungle","Jurassic World","Just Friends","Justice League","JW Fallen Kingdom","Kick-Ass","Kick-Ass 2","Kill Bill Vol 1","Kill Bill Vol 2","Kingsman Secret Service","Kiss the Girls","Last Knights","Leatherheads","Lethal Weapon","Lethal Weapon 2","Lethal Weapon 3","Lethal Weapon 4","Little Nicky","Logan","Lone Survivor","Mad Max Fury Road","Masterminds","Mechanic Resurrection","Men in Black","Million Dollar Baby","Mission Impossible","Mission Impossible Fallout","Mission Impossible Rogue Nation","Mr and Mrs Smith","Mrs Doubtfire","My Cousin Vinny","Nacho Libre","National Lampoons Christmas Vacation","Natural Born Killers","Need for Speed","Next","Nine Months","Oblivion","Oceans Eleven","Once Upon a Time in Venice","Orange County","Our Family Wedding","Out of the Furnace","Outbreak","Pacific Rim","Pacific Rim Uprising","Pain and Gain","Passengers","Pirates of the Caribbean Dead Men Tell No Tales","Pirates of the Caribbean On Stranger Tides","Point Break","Pompeii","Predator","Predators","Priest","Psych 9","Rain Man","Rambo","Rambo Last Blood","Rampage","Rampart","Ready Player One","Reservoir Dogs","Revenge of the Nerds","Ride Along","Ride Along 2","Risky Business","Road House","Robin Hood","Rogue One","Rush Hour","Rush Hour 2","Safe House","Savages","Scarface","School of Rock","Seventh Son","Sex Tape","Shallow Hal","Shanghai Knights","Shanghai Noon","Sherlock Holmes A Game of Shadows","Snow White and the Huntsman","Solo A Star Wars Story","Spaceballs","Speed","Star Wars The Force Awakens","Star Wars The Last Jedi","Super 8","Super Troopers","Super Troopers 2","Survival of the Dead","Tag","Taken","Talladega Nights","Tammy","Ted","Tenet","Terminator Genisys","Texas Chainsaw Massacre","The A-Team","The Accountant","The Aviator","The Breakfast Club","The Bucket List","The Client","The Dark Knight Rises","The Day After Tomorrow","The Dead Girl","The Dukes of Hazard","The Equalizer","The Expendables 3","The Fast and the Furious Tokyo Drift","The Fate of the Furious","The Fighter","The Gambler","The Gentlemen","The Glass House","The Green Mile","The Grinch","The Hangover","The Hangover Part 2","The Hangover Part 3","The Heat","The House Bunny","The Hunger Games","The Hunger Games Catching Fire","The Hunger Games Mockingjay","The Hunger Games Mockingjay Pt 2","The Hungover Games","The Ideas of March","The Karate Kid","The Lego Batman Movie","The Lorax","The Losers","The Magnificent Seven","The Martian","The Mechanic","The Meg","The Monuments Men","The Mule","The Musketeer","The Never-ending Story","The Nice Guys","The Outlaw","The Outsiders","The Quest","The Quick and the Dead","The Rundown","The Shawshank Redemption","The Shining","The Silence of the Lambs","The Son of No One","The Sorcerer's Apprentice","The Tax Collector","The Terminator","The Thing","The Town","The War with Grandpa","The Wolf of Wall Street","The Wolverine","The Woodsman","The World's End","The Wrestler","The Zodiac","Thelma and Louise","This is the End","Thor Ragnarok","Three Kings","Tinker Tailor Soldier Spy","Tomb Raider","Tower Heist","Transcendence","Transformers","Transformers The Last Knight","Trouble with the Curve","Tropic Thunder","Troy","Twister","Unforgiven","Vacation","War Dogs","Warrior","We're the Millers","Weekend at Bernie's","When Harry Met Sally","White Men Can't Jump","Why Him","Wild Card","Wonder Woman","World War Z","Wyatt Earp","X-Men","X-Men Apocalypse","X-Men Last Stand","X-Men Origins Wolverine","X2","Yogi Bear","Young Guns","Zodiac"].sort((a,b)=>{const c=s=>s.replace(/^(The|A|An) /i,'').toLowerCase();return c(a).localeCompare(c(b));});
+
+let DATA=TITLES.map((t,i)=>({title:t,num:i+1,poster:null}));
+let filtered=[…DATA];
+const cache={};
+
+function lg(t){const c=t.replace(/^(The|A|An) /i,’’)[0].toUpperCase();return/[0-9]/.test(c)?’#’:c;}
+
+function render(list){
+const el=document.getElementById(‘list’);
+if(!list.length){el.innerHTML=’<div class="nr">No titles found</div>’;return;}
+let h=’’,ll=’’;
+list.forEach(item=>{
+const g=lg(item.title);
+if(g!==ll){h+=’<div class="sh">’+g+’</div>’;ll=g;}
+const ab=item.title.replace(/^(The|A|An) /i,’’).substring(0,3).toUpperCase();
+const im=item.poster?’<img src="'+item.poster+'" alt="" loading="lazy"/>’:’<div class="pp" id="pp'+item.num+'">’+ab+’</div>’;
+h+=’<div class="mr"><span class="num">’+item.num+’</span><div class="pt" id="pt'+item.num+'">’+im+’</div><span class="ti">’+item.title+’</span></div>’;
+});
+el.innerHTML=h;
+document.getElementById(‘stats’).textContent=‘Showing ‘+list.length+’ of ‘+DATA.length+’ titles’;
+}
+
+function f(){
+const q=document.getElementById(‘search’).value.toLowerCase();
+filtered=q?DATA.filter(d=>d.title.toLowerCase().includes(q)):[…DATA];
+render(filtered);
+}
+
+async function loadPoster(item){
+const q=item.title.replace(/^(The|A|An) /i,’’).replace(/[^a-zA-Z0-9 ]/g,’’).trim();
+try{
+const r=await fetch(‘https://api.themoviedb.org/3/search/movie?api_key=’+API+’&query=’+encodeURIComponent(q)+’&language=en-US&page=1’);
+const d=await r.json();
+if(d.results&&d.results.length>0&&d.results[0].poster_path){
+const url=‘https://image.tmdb.org/t/p/w92’+d.results[0].poster_path;
+item.poster=url;
+cache[item.title]=url;
+const pt=document.getElementById(‘pt’+item.num);
+if(pt)pt.innerHTML=’<img src="'+url+'" alt="" loading="lazy"/>’;
+}
+}catch(e){}
+}
+
+async function loadAllPosters(){
+const BATCH=5;
+for(let i=0;i<DATA.length;i+=BATCH){
+const batch=DATA.slice(i,i+BATCH);
+await Promise.all(batch.map(item=>loadPoster(item)));
+await new Promise(r=>setTimeout(r,100));
+}
+document.getElementById(‘stats’).textContent=DATA.length+’ titles — posters loaded’;
+}
+
+render(DATA);
+document.getElementById(‘stats’).textContent=DATA.length+’ titles — loading posters…’;
+loadAllPosters();
+</script>
+
+</body>
+</html>
