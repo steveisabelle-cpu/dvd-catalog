@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="My Movies"/>
+<title>My Movie Collection</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0a0a0a;color:#fff;min-height:100vh}
+.header{background:#111;padding:16px 16px 0;position:sticky;top:0;z-index:100;border-bottom:1px solid #222}
+.header h1{font-size:22px;font-weight:800;letter-spacing:-0.5px;margin-bottom:12px;color:#fff}
+.tabs{display:flex;gap:0}
+.tab{flex:1;padding:10px 0;text-align:center;font-size:13px;font-weight:600;color:#666;cursor:pointer;border-bottom:2px solid transparent}
+.tab.active{color:#fff;border-bottom-color:#e50914}
+.search-wrap{padding:10px 16px;background:#0a0a0a;position:sticky;top:107px;z-index:99}
+.search-wrap input{width:100%;padding:10px 16px;font-size:15px;border:none;border-radius:8px;background:#1e1e1e;color:#fff;outline:none}
+.search-wrap input::placeholder{color:#555}
+#stats{font-size:12px;color:#555;padding:2px 16px 6px}
+.section-header{font-size:11px;font-weight:700;color:#e50914;letter-spacing:0.15em;text-transform:uppercase;padding:14px 16px 6px;background:#0a0a0a}
+.movie-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:0 16px 4px}
+.movie-card{cursor:pointer;border-radius:6px;overflow:hidden;background:#1a1a1a;position:relative;aspect-ratio:2/3}
+.movie-card:active{opacity:0.8}
+.movie-card img{width:100%;height:100%;object-fit:cover;display:block}
+.placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#1a1a1a;padding:8px;text-align:center}
+.placeholder .abbr{font-size:20px;font-weight:800;color:#333;margin-bottom:4px}
+.placeholder .ptitle{font-size:8px;color:#444;line-height:1.3}
+.num-badge{position:absolute;top:4px;left:4px;background:rgba(0,0,0,0.8);color:#888;font-size:9px;font-weight:700;padding:2px 4px;border-radius:3px}
+.new-badge{position:absolute;top:4px;right:4px;background:#e50914;color:#fff;font-size:8px;font-weight:700;padding:2px 5px;border-radius:3px}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.no-results{padding:60px 16px;text-align:center;color:#444;font-size:15px}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.95);z-index:1000;overflow-y:auto;display:none;-webkit-overflow-scrolling:touch}
+.modal-overlay.open{display:block}
+.modal{max-width:500px;margin:0 auto}
+.modal-backdrop-wrap{position:relative;width:100%;height:240px;overflow:hidden;background:#1a1a1a}
+.modal-backdrop-wrap img{width:100%;height:100%;object-fit:cover;display:block;opacity:0.7}
+.modal-close{position:fixed;top:14px;right:14px;width:32px;height:32px;background:rgba(0,0,0,0.8);border:1px solid #444;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:1001;color:#fff;font-size:14px;font-weight:700}
+.modal-body{padding:0 16px 50px}
+.modal-poster-row{display:flex;gap:14px;align-items:flex-start;margin-top:-50px;margin-bottom:14px}
+.modal-poster{width:85px;height:127px;border-radius:7px;overflow:hidden;flex-shrink:0;box-shadow:0 6px 24px rgba(0,0,0,0.7);background:#1a1a1a}
+.modal-poster img{width:100%;height:100%;object-fit:cover}
+.modal-info{padding-top:54px;flex:1}
+.modal-title{font-size:19px;font-weight:800;line-height:1.2;margin-bottom:4px}
+.modal-year{font-size:13px;color:#888;margin-bottom:6px}
+.modal-score{display:inline-flex;align-items:center;gap:4px;background:#e50914;color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px}
+.modal-overview{font-size:14px;color:#bbb;line-height:1.7;margin-bottom:14px;margin-top:14px}
+.modal-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.modal-tag{background:#1e1e1e;color:#888;font-size:11px;padding:4px 10px;border-radius:20px}
+.delete-btn{width:100%;padding:13px;background:#1a1a1a;border:1px solid #e50914;color:#e50914;font-size:15px;font-weight:600;border-radius:8px;cursor:pointer}
+.delete-btn:active{background:#e50914;color:#fff}
+.add-wrap{padding:20px 16px}
+.add-wrap h2{font-size:18px;font-weight:700;margin-bottom:16px}
+.add-field{width:100%;padding:12px 16px;font-size:15px;border:none;border-radius:8px;background:#1e1e1e;color:#fff;outline:none;margin-bottom:12px}
+.add-field::placeholder{color:#555}
+.library-select{display:flex;gap:8px;margin-bottom:16px}
+.lib-btn{flex:1;padding:11px;border:1px solid #333;border-radius:8px;background:#1a1a1a;color:#888;font-size:14px;font-weight:600;cursor:pointer;text-align:center}
+.lib-btn.selected{border-color:#e50914;color:#fff;background:#1e0000}
+.add-submit{width:100%;padding:14px;background:#e50914;color:#fff;font-size:16px;font-weight:700;border:none;border-radius:8px;cursor:pointer}
+.add-submit:disabled{background:#333;color:#555}
+.add-result{margin-top:12px;padding:12px;border-radius:8px;font-size:14px;text-align:center;display:none}
+.add-result.success{background:#0d2b0d;color:#4caf50;display:block}
+.add-result.error{background:#2b0d0d;color:#f44336;display:block}
+.search-result-item{padding:10px 14px;background:#1a1a1a;border-radius:6px;margin-bottom:6px;cursor:pointer;display:flex;align-items:center;gap:10px;border:1px solid #222}
+.search-result-item:active{background:#252525}
+.search-result-item img{width:30px;height:45px;object-fit:cover;border-radius:3px;flex-shrink:0;background:#333}
+.sri-title{font-size:14px;color:#fff;font-weight:600}
+.sri-year{font-size:12px;color:#888}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>My Movie Collection</h1>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('dvd')">DVD</div>
+    <div class="tab" onclick="switchTab('digital')">Digital</div>
+    <div class="tab" onclick="switchTab('add')">+ Add</div>
+  </div>
+</div>
+<div class="search-wrap" id="search-wrap">
+  <input type="search" id="search" placeholder="Search..." oninput="filterList()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+</div>
+<div id="stats"></div>
+<div id="tab-dvd" class="tab-content active"><div id="list-dvd"></div></div>
+<div id="tab-digital" class="tab-content"><div id="list-digital"></div></div>
+<div id="tab-add" class="tab-content">
+  <div class="add-wrap">
+    <h2>Add a Movie</h2>
+    <input type="text" class="add-field" id="add-search" placeholder="Search for a movie title..." oninput="searchForAdd()"/>
+    <div id="add-results"></div>
+    <div style="margin-bottom:10px;font-size:13px;color:#666;margin-top:4px">Add to library:</div>
+    <div class="library-select">
+      <div class="lib-btn selected" id="lib-dvd" onclick="selectLib('dvd')">DVD Collection</div>
+      <div class="lib-btn" id="lib-digital" onclick="selectLib('digital')">Digital</div>
+    </div>
+    <button class="add-submit" id="add-btn" onclick="addMovie()" disabled>Select a movie above</button>
+    <div class="add-result" id="add-result"></div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-close" onclick="closeModal()">X</div>
+    <div class="modal-backdrop-wrap"><img id="modal-backdrop" src="" alt=""/></div>
+    <div class="modal-body">
+      <div class="modal-poster-row">
+        <div class="modal-poster" id="modal-poster"></div>
+        <div class="modal-info">
+          <div class="modal-title" id="modal-title"></div>
+          <div class="modal-year" id="modal-year"></div>
+          <div class="modal-score" id="modal-score"></div>
+        </div>
+      </div>
+      <div class="modal-overview" id="modal-overview">Loading...</div>
+      <div class="modal-tags" id="modal-tags"></div>
+      <button class="delete-btn" onclick="deleteCurrentMovie()">Remove from Collection</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const FB = { apiKey: "AIzaSyBBKgF3BXF3WOrVATkyH-ZR296KbPPG6m0", authDomain: "my-movie-catalog-2acdc.firebaseapp.com", projectId: "my-movie-catalog-2acdc", storageBucket: "my-movie-catalog-2acdc.firebasestorage.app", messagingSenderId: "653525309773", appId: "1:653525309773:web:d931c15ce41e6673f37f04" };
+const app = initializeApp(FB);
+const db = getFirestore(app);
+const TMDB = "8670d5dc76f371b2ad77f98e626dfba2";
+const IMG = "https://image.tmdb.org/t/p/";
+
+const DVD_BASE = ["11.22.63","21","21 and Over","22 Jump Street","2012","30 Minutes or Less","50 First Dates","A Christmas Story","A Fistful of Dollars","A Million Ways to Die in the West","A Walk Among the Tombstones","Abraham Lincoln Vampire Hunter","Ad Astra","After Earth","Alien","Alien Covenant","Alien vs Predator","Aliens","American Gangster","American History X","American Hustle","American Pie","Annihilation","Ant-Man and the Wasp","Apollo 18","Aquaman","Austin Powers Goldmember","Avengers Age of Ultron","Avengers Endgame","Avatar","Batman vs Superman","Battleship","Baywatch","Bee Movie","Big Trouble in Little China","Bill and Teds Bogus Journey","Bill and Teds Excellent Adventure","Black Panther","Blade Runner","Bleeding Steel","Blended","Bloodshot","Blow","Boondock Saints","Brave","Bumblebee","Captain America The First Avenger","Captain America The Winter Soldier","Cast Away","Central Intelligence","Chicago","Chips","Civil War","Clash of the Titans","Cold Mountain","Collateral","Collateral Damage","Conan the Barbarian","Conan the Destroyer","Constantine","Contraband","Dawn of the Dead","Deadpool 2","Deliver Us","Despicable Me","Despicable Me 2","Despicable Me 3","Die Hard","Die Hard with a Vengeance","Dirty Grandpa","Divergent","Doctor Strange","Dolittle","Dragonheart","Due Date","Edward Scissorhands","Enemy of the State","Escape Plan","Eurotrip","Everything Must Go","Fantastic Beasts and Where to Find Them","Fantastic Beasts The Crimes of Grindelwald","Fast 5","Fast 6","Fast and Furious Hobbs and Shaw","Fast Times at Ridgemont High","Faster","Fear and Loathing in Las Vegas","Fight Club","First Man","Full Metal Jacket","Furious 7","G.I. Joe","Game Night","Gamer","Get Hard","Ghost in the Shell","Ghost Protocol","Godzilla","Gone in 60 Seconds","Goodfellas","Goon","Gravity","Groundhog Day","Grown Ups 2","Guardians of the Galaxy Vol 2","Hannibal","Happy Feet","Heartbreak Ridge","Hell Ride","Hercules","Herbie","Hitch","Homefront","Horrible Bosses","I Am Legend","Ice Age","Ice Age The Meltdown","Identity Thief","Immortals","Independence Day","Insurgent","Iron Man 3","J. Edgar","Jack Reacher","Jack Reacher Never Go Back","Jason Bourne","Jayne Mansfields Car","Jeepers Creepers","Joe Dirt","John Wick","John Wick 2","John Wick 3","Jonah Hex","Jumanji","Jumanji Welcome to the Jungle","Jurassic World","Just Friends","Justice League","JW Fallen Kingdom","Kick-Ass","Kick-Ass 2","Kill Bill Vol 1","Kill Bill Vol 2","Kingsman Secret Service","Kiss the Girls","Last Knights","Leatherheads","Lethal Weapon","Lethal Weapon 2","Lethal Weapon 3","Lethal Weapon 4","Little Nicky","Logan","Lone Survivor","Mad Max Fury Road","Masterminds","Mechanic Resurrection","Men in Black","Million Dollar Baby","Mission Impossible","Mission Impossible Fallout","Mission Impossible Rogue Nation","Mr and Mrs Smith","Mrs Doubtfire","My Cousin Vinny","Nacho Libre","National Lampoons Christmas Vacation","Natural Born Killers","Need for Speed","Next","Nine Months","Oblivion","Oceans Eleven","Once Upon a Time in Venice","Orange County","Our Family Wedding","Out of the Furnace","Outbreak","Pacific Rim","Pacific Rim Uprising","Pain and Gain","Passengers","Pirates of the Caribbean Dead Men Tell No Tales","Pirates of the Caribbean On Stranger Tides","Point Break","Pompeii","Predator","Predators","Priest","Psych 9","Rain Man","Rambo","Rambo Last Blood","Rampage","Rampart","Ready Player One","Reservoir Dogs","Revenge of the Nerds","Ride Along","Ride Along 2","Risky Business","Road House","Robin Hood","Rogue One","Rush Hour","Rush Hour 2","Safe House","Savages","Scarface","School of Rock","Seventh Son","Sex Tape","Shallow Hal","Shanghai Knights","Shanghai Noon","Sherlock Holmes A Game of Shadows","Snow White and the Huntsman","Solo A Star Wars Story","Spaceballs","Speed","Star Wars The Force Awakens","Star Wars The Last Jedi","Super 8","Super Troopers","Super Troopers 2","Survival of the Dead","Tag","Taken","Talladega Nights","Tammy","Ted","Tenet","Terminator Genisys","Texas Chainsaw Massacre","The A-Team","The Accountant","The Aviator","The Breakfast Club","The Bucket List","The Client","The Dark Knight Rises","The Day After Tomorrow","The Dead Girl","The Dukes of Hazard","The Equalizer","The Expendables 3","The Fast and the Furious Tokyo Drift","The Fate of the Furious","The Fighter","The Gambler","The Gentlemen","The Glass House","The Green Mile","The Grinch","The Hangover","The Hangover Part 2","The Hangover Part 3","The Heat","The House Bunny","The Hunger Games","The Hunger Games Catching Fire","The Hunger Games Mockingjay","The Hunger Games Mockingjay Pt 2","The Hungover Games","The Ideas of March","The Karate Kid","The Lego Batman Movie","The Lorax","The Losers","The Magnificent Seven","The Martian","The Mechanic","The Meg","The Monuments Men","The Mule","The Musketeer","The Never-ending Story","The Nice Guys","The Outlaw","The Outsiders","The Quest","The Quick and the Dead","The Rundown","The Shawshank Redemption","The Shining","The Silence of the Lambs","The Son of No One","The Sorcerers Apprentice","The Tax Collector","The Terminator","The Thing","The Town","The War with Grandpa","The Wolf of Wall Street","The Wolverine","The Woodsman","The Worlds End","The Wrestler","The Zodiac","Thelma and Louise","This is the End","Thor Ragnarok","Three Kings","Tinker Tailor Soldier Spy","Tomb Raider","Tower Heist","Transcendence","Transformers","Transformers The Last Knight","Trouble with the Curve","Tropic Thunder","Troy","Twister","Unforgiven","Vacation","War Dogs","Warrior","Were the Millers","Weekend at Bernies","When Harry Met Sally","White Men Cant Jump","Why Him","Wild Card","Wonder Woman","World War Z","Wyatt Earp","X-Men","X-Men Apocalypse","X-Men Last Stand","X-Men Origins Wolverine","X2","Yogi Bear","Young Guns","Zodiac"];
+const DIG_BASE = ["65","Airplane","Anaconda","Babylon","The Bad Guys 2","Beetlejuice","Beetlejuice Beetlejuice","Black Adam","Blade","Blade 2","Blade Trinity","Bumblebee","Casper","Civil War","Cocaine Bear","Daffy Ducks Quackbusters","Despicable Me 4","Django Unchained","Dracula Dead and Loving It","Elemental","Fatman","A Few Good Men","Final Destination","Ghost Rider","Ghost Rider Spirit of Vengeance","Gone in 60 Seconds","Indiana Jones Raiders of the Lost Ark","Indiana Jones and the Temple of Doom","Indiana Jones and the Last Crusade","Indiana Jones and the Dial of Destiny","Indiana Jones and the Kingdom of the Crystal Skull","Inside Out 2","The Italian Job","John Wick 4","Jurassic Park","Jurassic Park 3","Jurassic Park The Lost World","Jurassic World","Jurassic World Dominion","Jurassic World Fallen Kingdom","Jurassic World Rebirth","The Lego Movie","The Lego Movie The Second Part","The Lego Ninjago Movie","The Lego Batman Movie","Men in Black","Mickey 17","Mortal Kombat","Mummies","My Girl","National Lampoons Christmas Vacation","Novacaine","Odd Thomas","Scrooged","Small Soldiers","Snatch","Spider-Man No Way Home","The Legend of Sleepy Hollow","The SpongeBob Movie Sponge Out of Water","Starship Troopers","Top Gun","Top Gun Maverick","Top Secret","Transformers","Transformers Revenge of the Fallen","Transformers Dark of the Moon","Transformers Age of Extinction","Transformers The Last Knight","Transformers Rise of the Beasts","Venom The Last Dance","Violent Night","Weekend at Bernies","Zootopia 2"];
+
+let dvdData=[], digData=[], currentTab="dvd", currentModalItem=null, selectedLib="dvd", selectedAddMovie=null, addTimer=null;
+let fbDvdAdded=[], fbDvdDeleted=[], fbDigAdded=[], fbDigDeleted=[];
+
+function sortArr(arr){
+  return arr.slice().sort((a,b)=>{
+    const c=s=>s.replace(/^(The|A|An) /i,"").toLowerCase();
+    const ta=a.title||a, tb=b.title||b;
+    return c(ta)<c(tb)?-1:c(ta)>c(tb)?1:0;
+  });
+}
+
+function lgr(title){
+  const t=(title||"").replace(/^(The|A|An) /i,"");
+  return /[0-9]/.test(t[0])?"#":(t[0]||"?").toUpperCase();
+}
+
+function mkId(title){ return title.replace(/[^a-zA-Z0-9]/g,"_"); }
+
+function renderGrid(list, elId){
+  const el=document.getElementById(elId);
+  if(!list.length){el.innerHTML="<div class=\"no-results\">No titles found</div>";return;}
+  let html="",lastL="",gridOpen=false;
+  list.forEach(item=>{
+    const g=lgr(item.title);
+    if(g!==lastL){if(gridOpen)html+="</div>";html+="<div class=\"section-header\">"+g+"</div><div class=\"movie-grid\">";lastL=g;gridOpen=true;}
+    const abbr=item.title.replace(/^(The|A|An) /i,"").substring(0,3).toUpperCase();
+    const inner=item.poster?"<img src=\""+item.poster+"\" alt=\"\" loading=\"lazy\"/>":"<div class=\"placeholder\"><div class=\"abbr\">"+abbr+"</div><div class=\"ptitle\">"+item.title+"</div></div>";
+    const nb=item.custom?"<div class=\"new-badge\">NEW</div>":"";
+    html+="<div class=\"movie-card\" id=\"card-"+elId+"-"+item.id+"\" onclick=\"showDetail('"+item.tab+"','"+item.id+"')\"><div class=\"num-badge\">"+item.num+"</div>"+nb+inner+"</div>";
+  });
+  if(gridOpen)html+="</div>";
+  el.innerHTML=html;
+}
+
+function rebuild(){
+  const dvdTitles=DVD_BASE.filter(t=>!fbDvdDeleted.includes(t));
+  let dvdAll=dvdTitles.map(t=>({title:t,custom:false,tab:"dvd"}));
+  fbDvdAdded.forEach(item=>dvdAll.push({title:item.title,poster:item.poster||null,custom:true,tab:"dvd",_docId:item._docId,tmdbId:item.tmdbId}));
+  dvdAll=sortArr(dvdAll);
+  dvdData=dvdAll.map((item,i)=>({...item,num:i+1,id:mkId(item.title)}));
+
+  const digTitles=DIG_BASE.filter(t=>!fbDigDeleted.includes(t));
+  let digAll=digTitles.map(t=>({title:t,custom:false,tab:"digital"}));
+  fbDigAdded.forEach(item=>digAll.push({title:item.title,poster:item.poster||null,custom:true,tab:"digital",_docId:item._docId,tmdbId:item.tmdbId}));
+  digAll=sortArr(digAll);
+  digData=digAll.map((item,i)=>({...item,num:i+1,id:mkId(item.title)}));
+
+  renderGrid(dvdData,"list-dvd");
+  renderGrid(digData,"list-digital");
+  if(currentTab==="dvd")document.getElementById("stats").textContent=dvdData.length+" titles";
+  else if(currentTab==="digital")document.getElementById("stats").textContent=digData.length+" titles";
+  loadPosters(dvdData,"list-dvd");
+  loadPosters(digData,"list-digital");
+}
+
+onSnapshot(collection(db,"dvd_added"),snap=>{fbDvdAdded=snap.docs.map(d=>({...d.data(),_docId:d.id}));rebuild();});
+onSnapshot(collection(db,"dvd_deleted"),snap=>{fbDvdDeleted=snap.docs.map(d=>d.data().title);rebuild();});
+onSnapshot(collection(db,"digital_added"),snap=>{fbDigAdded=snap.docs.map(d=>({...d.data(),_docId:d.id}));rebuild();});
+onSnapshot(collection(db,"digital_deleted"),snap=>{fbDigDeleted=snap.docs.map(d=>d.data().title);rebuild();});
+
+function loadPosters(data,elId){
+  let i=0;
+  function next(){
+    if(i>=data.length)return;
+    const item=data[i++];
+    if(item.poster){setTimeout(next,30);return;}
+    const q=item.title.replace(/^(The|A|An) /i,"").replace(/[^a-zA-Z0-9 ]/g,"").trim();
+    fetch("https://api.themoviedb.org/3/search/movie?api_key="+TMDB+"&query="+encodeURIComponent(q)+"&language=en-US&page=1")
+    .then(r=>r.json())
+    .then(d=>{
+      if(d.results&&d.results.length>0&&d.results[0].poster_path){
+        item.poster=IMG+"w185"+d.results[0].poster_path;
+        const card=document.getElementById("card-"+elId+"-"+item.id);
+        if(card){card.innerHTML="<div class=\"num-badge\">"+item.num+"</div>"+(item.custom?"<div class=\"new-badge\">NEW</div>":"")+"<img src=\""+item.poster+"\" alt=\"\" loading=\"lazy\"/>";card.setAttribute("onclick","showDetail('"+item.tab+"','"+item.id+"')");}
+      }
+    }).catch(()=>{}).then(()=>setTimeout(next,80));
+  }
+  next();
+}
+
+window.switchTab=function(tab){
+  currentTab=tab;
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));
+  document.querySelector("[onclick=\"switchTab('"+tab+"')\"]").classList.add("active");
+  document.getElementById("tab-"+tab).classList.add("active");
+  const sw=document.getElementById("search-wrap");
+  const st=document.getElementById("stats");
+  sw.style.display=tab==="add"?"none":"block";
+  st.style.display=tab==="add"?"none":"block";
+  if(tab!=="add"){document.getElementById("search").value="";const data=tab==="dvd"?dvdData:digData;st.textContent=data.length+" titles";}
+};
+
+window.filterList=function(){
+  const q=document.getElementById("search").value.toLowerCase();
+  const data=currentTab==="dvd"?dvdData:digData;
+  const elId=currentTab==="dvd"?"list-dvd":"list-digital";
+  const filtered=q?data.filter(d=>d.title.toLowerCase().includes(q)):data.slice();
+  renderGrid(filtered,elId);
+  document.getElementById("stats").textContent="Showing "+filtered.length+" of "+data.length+" titles";
+};
+
+window.showDetail=function(tab,id){
+  const data=tab==="dvd"?dvdData:digData;
+  const item=data.find(d=>d.id===id);
+  if(!item)return;
+  currentModalItem=item;
+  document.getElementById("modal-title").textContent=item.title;
+  document.getElementById("modal-year").textContent="";
+  document.getElementById("modal-score").textContent="";
+  document.getElementById("modal-overview").textContent="Loading...";
+  document.getElementById("modal-tags").innerHTML="";
+  document.getElementById("modal-backdrop").src="";
+  document.getElementById("modal-poster").innerHTML="";
+  document.getElementById("modal").classList.add("open");
+  document.body.style.overflow="hidden";
+  const q=item.title.replace(/^(The|A|An) /i,"").replace(/[^a-zA-Z0-9 ]/g,"").trim();
+  fetch("https://api.themoviedb.org/3/search/movie?api_key="+TMDB+"&query="+encodeURIComponent(q)+"&language=en-US&page=1")
+  .then(r=>r.json())
+  .then(d=>{
+    if(d.results&&d.results.length>0){
+      const m=d.results[0];
+      document.getElementById("modal-title").textContent=m.title||item.title;
+      document.getElementById("modal-year").textContent=m.release_date?m.release_date.substring(0,4):"";
+      document.getElementById("modal-score").textContent=m.vote_average?"★ "+m.vote_average.toFixed(1):"";
+      document.getElementById("modal-overview").textContent=m.overview||"No synopsis available.";
+      if(m.backdrop_path)document.getElementById("modal-backdrop").src=IMG+"w780"+m.backdrop_path;
+      if(m.poster_path)document.getElementById("modal-poster").innerHTML="<img src=\""+IMG+"w185"+m.poster_path+"\" alt=\"\"/>";
+      return fetch("https://api.themoviedb.org/3/movie/"+m.id+"?api_key="+TMDB);
+    }
+  })
+  .then(r=>{if(r)return r.json();})
+  .then(d=>{if(d&&d.genres&&d.genres.length)document.getElementById("modal-tags").innerHTML=d.genres.map(g=>"<span class=\"modal-tag\">"+g.name+"</span>").join("");})
+  .catch(()=>{document.getElementById("modal-overview").textContent="Could not load details.";});
+};
+
+window.closeModal=function(){
+  document.getElementById("modal").classList.remove("open");
+  document.body.style.overflow="";
+  currentModalItem=null;
+};
+
+window.deleteCurrentMovie=function(){
+  if(!currentModalItem)return;
+  const item=currentModalItem;
+  if(!confirm("Remove \""+item.title+"\" from your collection?"))return;
+  const colName=item.tab==="dvd"?(item.custom?"dvd_added":"dvd_deleted"):(item.custom?"digital_added":"digital_deleted");
+  const docId=item.custom?(item._docId||mkId(item.title)+"_"+item.tmdbId):mkId(item.title);
+  if(item.custom){
+    deleteDoc(doc(db,colName,docId)).then(()=>closeModal()).catch(()=>alert("Could not remove. Try again."));
+  } else {
+    setDoc(doc(db,colName,mkId(item.title)),{title:item.title}).then(()=>closeModal()).catch(()=>alert("Could not remove. Try again."));
+  }
+};
+
+window.searchForAdd=function(){
+  clearTimeout(addTimer);
+  selectedAddMovie=null;
+  document.getElementById("add-btn").disabled=true;
+  document.getElementById("add-btn").textContent="Select a movie above";
+  const q=document.getElementById("add-search").value.trim();
+  if(q.length<2){document.getElementById("add-results").innerHTML="";return;}
+  addTimer=setTimeout(()=>{
+    fetch("https://api.themoviedb.org/3/search/movie?api_key="+TMDB+"&query="+encodeURIComponent(q)+"&language=en-US&page=1")
+    .then(r=>r.json())
+    .then(d=>{
+      if(!d.results||!d.results.length){document.getElementById("add-results").innerHTML="<div style=\"color:#555;font-size:13px;padding:8px\">No results</div>";return;}
+      let html="";
+      d.results.slice(0,6).forEach(m=>{
+        const yr=m.release_date?m.release_date.substring(0,4):"";
+        const th=m.poster_path?"<img src=\""+IMG+"w92"+m.poster_path+"\" alt=\"\"/>":"<div style=\"width:30px;height:45px;background:#333;border-radius:3px\"></div>";
+        const mJson=JSON.stringify({id:m.id,title:m.title,poster_path:m.poster_path||null,release_date:m.release_date||""}).replace(/"/g,"&quot;");
+        html+="<div class=\"search-result-item\" onclick=\"selectAddMovie(JSON.parse(this.dataset.m))\" data-m=\""+mJson+"\">"+th+"<div><div class=\"sri-title\">"+m.title+"</div><div class=\"sri-year\">"+yr+"</div></div></div>";
+      });
+      document.getElementById("add-results").innerHTML=html;
+    });
+  },400);
+};
+
+window.selectAddMovie=function(m){
+  selectedAddMovie=m;
+  document.getElementById("add-search").value=m.title;
+  document.getElementById("add-results").innerHTML="";
+  document.getElementById("add-btn").disabled=false;
+  document.getElementById("add-btn").textContent="Add to "+(selectedLib==="dvd"?"DVD Collection":"Digital");
+};
+
+window.selectLib=function(lib){
+  selectedLib=lib;
+  document.getElementById("lib-dvd").className="lib-btn"+(lib==="dvd"?" selected":"");
+  document.getElementById("lib-digital").className="lib-btn"+(lib==="digital"?" selected":"");
+  if(selectedAddMovie)document.getElementById("add-btn").textContent="Add to "+(lib==="dvd"?"DVD Collection":"Digital");
+};
+
+window.addMovie=function(){
+  if(!selectedAddMovie)return;
+  const m=selectedAddMovie;
+  const colName=selectedLib==="dvd"?"dvd_added":"digital_added";
+  const docId=mkId(m.title)+"_"+m.id;
+  const poster=m.poster_path?IMG+"w185"+m.poster_path:null;
+  document.getElementById("add-btn").disabled=true;
+  document.getElementById("add-btn").textContent="Adding...";
+  setDoc(doc(db,colName,docId),{title:m.title,poster:poster,tmdbId:m.id,addedAt:new Date().toISOString()})
+  .then(()=>{
+    const res=document.getElementById("add-result");
+    res.className="add-result success";
+    res.textContent="\""+m.title+"\" added to "+(selectedLib==="dvd"?"DVD Collection":"Digital")+"!";
+    document.getElementById("add-search").value="";
+    document.getElementById("add-btn").textContent="Select a movie above";
+    selectedAddMovie=null;
+    setTimeout(()=>{res.className="add-result";},3000);
+  })
+  .catch(()=>{
+    const res=document.getElementById("add-result");
+    res.className="add-result error";
+    res.textContent="Failed to add. Try again.";
+    document.getElementById("add-btn").disabled=false;
+    document.getElementById("add-btn").textContent="Add to "+(selectedLib==="dvd"?"DVD Collection":"Digital");
+  });
+};
+
+document.getElementById("modal").addEventListener("click",function(e){if(e.target===this)closeModal();});
+</script>
+</body>
+</html>
