@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -136,9 +135,76 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
 .ai-lib{font-size:9.5px;color:#c4b5fd;font-weight:800;margin-top:6px;letter-spacing:0.1em;text-transform:uppercase}
 .ai-lib.dvd{color:#ff6b7a}
 .ai-error{background:rgba(244,67,54,0.1);border:1px solid rgba(244,67,54,0.3);color:#ff8579;padding:14px;border-radius:10px;font-size:13.5px;text-align:center;line-height:1.5}
+
+/* Splash Screen Styles */
+.splash-screen {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #0a0a0f 0%, #16161d 100%);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  text-align: center;
+  padding: 20px;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+.splash-screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+.splash-title {
+  font-size: 32px;
+  font-weight: 900;
+  line-height: 1.2;
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, #e50914 0%, #ffb3b3 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: pulse 2s infinite;
+}
+.splash-icons {
+  font-size: 48px;
+  display: flex;
+  gap: 16px;
+  animation: float 3s ease-in-out infinite;
+}
+.splash-loading {
+  margin-top: 30px;
+  font-size: 14px;
+  color: #8a8a94;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+@keyframes pulse { 
+  0% { transform: scale(1); } 
+  50% { transform: scale(1.03); } 
+  100% { transform: scale(1); } 
+}
+@keyframes float { 
+  0%, 100% { transform: translateY(0); } 
+  50% { transform: translateY(-10px); } 
+}
 </style>
 </head>
 <body>
+
+<div id="splash-screen" class="splash-screen">
+  <div class="splash-title">The Isabelle Family's<br>Crazy Awesome Movie Fun Time<br>Catalog Deluxe 3000</div>
+  <div class="splash-icons">🍿 🎥 🎟️ 🎬 🥤</div>
+  <div class="splash-loading">
+    <div class="ai-spinner" style="width: 16px; height: 16px;"></div> 
+    Loading movie magic...
+  </div>
+</div>
+
 <div class="header">
   <h1>🎬 Super Fun Awesome Family Movie Time Deluxe</h1>
   <div class="tabs">
@@ -226,17 +292,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
 const FB = { apiKey: "AIzaSyBBKgF3BXF3WOrVATkyH-ZR296KbPPG6m0", authDomain: "my-movie-catalog-2acdc.firebaseapp.com", projectId: "my-movie-catalog-2acdc", storageBucket: "my-movie-catalog-2acdc.firebasestorage.app", messagingSenderId: "653525309773", appId: "1:653525309773:web:d931c15ce41e6673f37f04" };
 const app = initializeApp(FB);
 const db = getFirestore(app);
 const TMDB = "8670d5dc76f371b2ad77f98e626dfba2";
 const IMG = "https://image.tmdb.org/t/p/";
-
 // OpenRouter AI config
 const OPENROUTER_KEY = "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";
 const OPENROUTER_MODEL = "meta-llama/llama-3.3-70b-instruct:free";
-
 const DVD_BASE = [
   {title:"21",type:"movie"},{title:"21 and Over",type:"movie"},{title:"22 Jump Street",type:"movie"},{title:"2012",type:"movie"},{title:"30 Minutes or Less",type:"movie"},{title:"50 First Dates",type:"movie"},
   {title:"A Christmas Story",type:"movie"},{title:"A Fistful of Dollars",type:"movie"},{title:"A Million Ways to Die in the West",type:"movie"},{title:"A Walk Among the Tombstones",type:"movie"},
@@ -308,7 +371,6 @@ const DVD_BASE = [
   {title:"Yogi Bear",type:"movie"},{title:"Young Guns",type:"movie"},{title:"Zodiac",type:"movie"},
   {title:"11.22.63",type:"tv"}
 ];
-
 const DIG_BASE = [
   {title:"65",type:"movie"},{title:"Airplane",type:"movie"},{title:"Anaconda",type:"movie"},{title:"Babylon",type:"movie"},{title:"The Bad Guys 2",type:"movie"},
   {title:"Beetlejuice",type:"movie"},{title:"Beetlejuice Beetlejuice",type:"movie"},{title:"Black Adam",type:"movie"},
@@ -330,7 +392,6 @@ const DIG_BASE = [
   {title:"Venom The Last Dance",type:"movie"},{title:"Violent Night",type:"movie"},{title:"Weekend at Bernies",type:"movie"},{title:"Zootopia 2",type:"movie"},
   {title:"Supernatural",type:"tv"}
 ];
-
 const PROMPT_SUGGESTIONS = [
   "Mindless comedy for a tired night",
   "Big action with explosions",
@@ -341,7 +402,6 @@ const PROMPT_SUGGESTIONS = [
   "Classic 80s or 90s vibes",
   "Something short and funny"
 ];
-
 let dvdData=[], digData=[], currentTab="dvd", currentModalItem=null, selectedLib="dvd", selectedAddMovie=null, addTimer=null, selectedType="movie", aiLib="all";
 let fbDvdAdded=[], fbDvdDeleted=[], fbDigAdded=[], fbDigDeleted=[];
 let enrichmentCache={};
@@ -362,7 +422,7 @@ function renderGrid(list,elId){
   if(!list.length){el.innerHTML='<div class="no-results">No titles found</div>';return;}
   const groups={};
   list.forEach(function(item){const g=lgr(item.title);if(!groups[g])groups[g]=[];groups[g].push(item);});
-  const order=Object.keys(groups).sort(function(a,b){if(a==="#")return -1;if(b==="#")return 1;return a.localeCompare(b);});
+const order=Object.keys(groups).sort(function(a,b){if(a==="#")return -1;if(b==="#")return 1;return a.localeCompare(b);});
   let html="";
   order.forEach(function(g){
     html+='<div class="section-header">'+g+'</div><div class="movie-grid">';
@@ -377,7 +437,7 @@ function renderGrid(list,elId){
     });
     html+='</div>';
   });
-  el.innerHTML=html;
+el.innerHTML=html;
 }
 
 function rebuild(){
@@ -393,7 +453,7 @@ function rebuild(){
   digData=digAll.map((item,i)=>({...item,tab:"digital",num:i+1,id:mkId(item.title)}));
   renderGrid(dvdData,"list-dvd");
   renderGrid(digData,"list-digital");
-  if(currentTab==="dvd")document.getElementById("stats").textContent=dvdData.length+" titles";
+if(currentTab==="dvd")document.getElementById("stats").textContent=dvdData.length+" titles";
   else if(currentTab==="digital")document.getElementById("stats").textContent=digData.length+" titles";
   loadPosters(dvdData,"list-dvd");
   loadPosters(digData,"list-digital");
@@ -404,7 +464,6 @@ onSnapshot(collection(db,"dvd_added"),snap=>{fbDvdAdded=snap.docs.map(d=>({...d.
 onSnapshot(collection(db,"dvd_deleted"),snap=>{fbDvdDeleted=snap.docs.map(d=>d.data().title);rebuild();});
 onSnapshot(collection(db,"digital_added"),snap=>{fbDigAdded=snap.docs.map(d=>({...d.data(),_docId:d.id}));rebuild();});
 onSnapshot(collection(db,"digital_deleted"),snap=>{fbDigDeleted=snap.docs.map(d=>d.data().title);rebuild();});
-
 onSnapshot(collection(db,"enrichment"),snap=>{
   enrichmentCache={};
   snap.docs.forEach(d=>{enrichmentCache[d.id]=d.data();});
@@ -414,13 +473,13 @@ onSnapshot(collection(db,"enrichment"),snap=>{
 
 function loadPosters(data,elId){
   let i=0;
-  function next(){
+function next(){
     if(i>=data.length)return;
     const item=data[i++];
     if(item.poster){setTimeout(next,30);return;}
     const q=item.title.replace(/^(The|A|An) /i,"").replace(/[^a-zA-Z0-9 ]/g,"").trim();
     const ep=item.type==="tv"?"search/tv":"search/movie";
-    fetch("https://api.themoviedb.org/3/"+ep+"?api_key="+TMDB+"&query="+encodeURIComponent(q)+"&language=en-US&page=1")
+fetch("https://api.themoviedb.org/3/"+ep+"?api_key="+TMDB+"&query="+encodeURIComponent(q)+"&language=en-US&page=1")
     .then(r=>r.json()).then(d=>{
       if(d.results&&d.results.length>0&&d.results[0].poster_path){
         item.poster=IMG+"w185"+d.results[0].poster_path;
@@ -432,7 +491,7 @@ function loadPosters(data,elId){
         }
       }
     }).catch(()=>{}).then(()=>setTimeout(next,80));
-  }
+}
   next();
 }
 
@@ -443,42 +502,42 @@ async function enrichCollection(){
   if(missing.length===0){
     document.getElementById("enrich-status").style.display="none";
     return;
-  }
+}
   enrichmentInProgress=true;
   const status=document.getElementById("enrich-status");
   status.style.display="block";
   let done=0;
   for(const item of missing){
     status.textContent="✨ Enriching library for smarter AI... "+(done+1)+" / "+missing.length;
-    const q=item.title.replace(/^(The|A|An) /i,"").replace(/[^a-zA-Z0-9 ]/g,"").trim();
+const q=item.title.replace(/^(The|A|An) /i,"").replace(/[^a-zA-Z0-9 ]/g,"").trim();
     const ep=item.type==="tv"?"search/tv":"search/movie";
     try{
       const searchRes=await fetch("https://api.themoviedb.org/3/"+ep+"?api_key="+TMDB+"&query="+encodeURIComponent(q)+"&language=en-US&page=1");
       const searchData=await searchRes.json();
-      if(searchData.results&&searchData.results.length>0){
+if(searchData.results&&searchData.results.length>0){
         const m=searchData.results[0];
         const detailEp=item.type==="tv"?"tv":"movie";
         const detailRes=await fetch("https://api.themoviedb.org/3/"+detailEp+"/"+m.id+"?api_key="+TMDB);
         const detailData=await detailRes.json();
         const dk=item.type==="tv"?"first_air_date":"release_date";
-        const payload={
+const payload={
           genres:(detailData.genres||[]).map(g=>g.name),
           overview:(m.overview||"").slice(0,300),
           year:m[dk]?m[dk].substring(0,4):"",
           type:item.type
         };
-        await setDoc(doc(db,"enrichment",item.id),payload);
+await setDoc(doc(db,"enrichment",item.id),payload);
         enrichmentCache[item.id]=payload;
       } else {
         const payload={genres:[],overview:"",year:"",type:item.type};
         await setDoc(doc(db,"enrichment",item.id),payload);
         enrichmentCache[item.id]=payload;
-      }
+}
     } catch(e){
       console.error("Enrichment failed for",item.title,e);
     }
     done++;
-    await new Promise(r=>setTimeout(r,120));
+await new Promise(r=>setTimeout(r,120));
   }
   status.style.display="none";
   enrichmentInProgress=false;
@@ -494,7 +553,7 @@ window.switchTab=function(tab){
   const hide=tab==="add"||tab==="ai";
   document.getElementById("search-wrap").style.display=hide?"none":"flex";
   document.getElementById("stats").style.display=hide?"none":"block";
-  if(!hide){document.getElementById("search").value="";const data=tab==="dvd"?dvdData:digData;document.getElementById("stats").textContent=data.length+" titles";}
+if(!hide){document.getElementById("search").value="";const data=tab==="dvd"?dvdData:digData;document.getElementById("stats").textContent=data.length+" titles";}
 };
 
 window.clearSearch=function(){document.getElementById("search").value="";filterList();};
@@ -505,7 +564,7 @@ window.filterList=function(){
   const elId=currentTab==="dvd"?"list-dvd":"list-digital";
   const filtered=q?data.filter(d=>d.title.toLowerCase().includes(q)):data.slice();
   renderGrid(filtered,elId);
-  document.getElementById("stats").textContent=q?"Showing "+filtered.length+" of "+data.length+" titles":data.length+" titles";
+document.getElementById("stats").textContent=q?"Showing "+filtered.length+" of "+data.length+" titles":data.length+" titles";
 };
 
 window.showDetail=function(tab,id){
@@ -516,7 +575,7 @@ window.showDetail=function(tab,id){
   document.getElementById("modal-title").textContent=item.title;
   document.getElementById("modal-year").textContent="";
   const scoreEl=document.getElementById("modal-score");
-  const tvEl=document.getElementById("modal-tv-tag");
+const tvEl=document.getElementById("modal-tv-tag");
   scoreEl.style.display="none";
   tvEl.style.display=item.type==="tv"?"inline-flex":"none";
   document.getElementById("modal-overview").textContent="Loading...";
@@ -527,7 +586,7 @@ window.showDetail=function(tab,id){
   document.body.style.overflow="hidden";
   const q=item.title.replace(/^(The|A|An) /i,"").replace(/[^a-zA-Z0-9 ]/g,"").trim();
   const ep=item.type==="tv"?"search/tv":"search/movie";
-  fetch("https://api.themoviedb.org/3/"+ep+"?api_key="+TMDB+"&query="+encodeURIComponent(q)+"&language=en-US&page=1")
+fetch("https://api.themoviedb.org/3/"+ep+"?api_key="+TMDB+"&query="+encodeURIComponent(q)+"&language=en-US&page=1")
   .then(r=>r.json()).then(d=>{
     if(d.results&&d.results.length>0){
       const m=d.results[0];
@@ -540,7 +599,7 @@ window.showDetail=function(tab,id){
       if(m.backdrop_path)document.getElementById("modal-backdrop").src=IMG+"w780"+m.backdrop_path;
       if(m.poster_path)document.getElementById("modal-poster").innerHTML='<img src="'+IMG+"w185"+m.poster_path+'" alt=""/>';
       return fetch("https://api.themoviedb.org/3/"+(item.type==="tv"?"tv":"movie")+"/"+m.id+"?api_key="+TMDB);
-    }
+}
   }).then(r=>{if(r)return r.json();})
   .then(d=>{if(d&&d.genres&&d.genres.length)document.getElementById("modal-tags").innerHTML=d.genres.map(g=>'<span class="modal-tag">'+g.name+'</span>').join("");})
   .catch(()=>{document.getElementById("modal-overview").textContent="Could not load details.";});
@@ -551,14 +610,13 @@ window.closeModal=function(){
   document.body.style.overflow="";
   currentModalItem=null;
 };
-
 window.deleteCurrentMovie=function(){
   if(!currentModalItem)return;
   const item=currentModalItem;
   if(!confirm('Remove "'+item.title+'" from your collection?'))return;
   const colName=item.tab==="dvd"?(item.custom?"dvd_added":"dvd_deleted"):(item.custom?"digital_added":"digital_deleted");
   const docId=item.custom?(item._docId||mkId(item.title)+"_"+item.tmdbId):mkId(item.title);
-  if(item.custom){deleteDoc(doc(db,colName,docId)).then(()=>closeModal()).catch(()=>alert("Could not remove. Try again."));}
+if(item.custom){deleteDoc(doc(db,colName,docId)).then(()=>closeModal()).catch(()=>alert("Could not remove. Try again."));}
   else{setDoc(doc(db,colName,mkId(item.title)),{title:item.title}).then(()=>closeModal()).catch(()=>alert("Could not remove. Try again."));}
 };
 
@@ -568,7 +626,7 @@ window.selectType=function(type){
   document.getElementById("type-tv").className="type-btn"+(type==="tv"?" selected":"");
   document.getElementById("add-search").value="";
   document.getElementById("add-results").innerHTML="";
-  selectedAddMovie=null;
+selectedAddMovie=null;
   document.getElementById("add-btn").disabled=true;
   document.getElementById("add-btn").textContent="Select a title above";
 };
@@ -578,7 +636,7 @@ window.searchForAdd=function(){
   document.getElementById("add-btn").disabled=true;
   document.getElementById("add-btn").textContent="Select a title above";
   const q=document.getElementById("add-search").value.trim();
-  if(q.length<2){document.getElementById("add-results").innerHTML="";return;}
+if(q.length<2){document.getElementById("add-results").innerHTML="";return;}
   addTimer=setTimeout(()=>{
     const ep=selectedType==="tv"?"search/tv":"search/movie";
     fetch("https://api.themoviedb.org/3/"+ep+"?api_key="+TMDB+"&query="+encodeURIComponent(q)+"&language=en-US&page=1")
@@ -592,7 +650,7 @@ window.searchForAdd=function(){
         const th=m.poster_path?'<img src="'+IMG+"w92"+m.poster_path+'" alt=""/>':'<div style="width:34px;height:51px;background:#333;border-radius:4px"></div>';
         const tl=selectedType==="tv"?'<div class="sri-type">TV SHOW</div>':"";
         const mStr=JSON.stringify({id:m.id,title:m[tk],poster_path:m.poster_path||null,release_date:m[dk]||"",type:selectedType}).replace(/"/g,"&quot;");
-        html+='<div class="search-result-item" onclick="selectAddMovie(JSON.parse(this.dataset.m))" data-m="'+mStr+'">'+th+'<div><div class="sri-title">'+m[tk]+'</div><div class="sri-year">'+yr+'</div>'+tl+'</div></div>';
+html+='<div class="search-result-item" onclick="selectAddMovie(JSON.parse(this.dataset.m))" data-m="'+mStr+'">'+th+'<div><div class="sri-title">'+m[tk]+'</div><div class="sri-year">'+yr+'</div>'+tl+'</div></div>';
       });
       document.getElementById("add-results").innerHTML=html;
     });
@@ -604,7 +662,7 @@ window.selectAddMovie=function(m){
   document.getElementById("add-search").value=m.title;
   document.getElementById("add-results").innerHTML="";
   document.getElementById("add-btn").disabled=false;
-  document.getElementById("add-btn").textContent="Add to "+(selectedLib==="dvd"?"DVD Collection":"Digital");
+document.getElementById("add-btn").textContent="Add to "+(selectedLib==="dvd"?"DVD Collection":"Digital");
 };
 
 window.selectLib=function(lib){
@@ -616,13 +674,13 @@ window.selectLib=function(lib){
 
 window.addTitle=function(){
   if(!selectedAddMovie)return;
-  const m=selectedAddMovie;
+const m=selectedAddMovie;
   const colName=selectedLib==="dvd"?"dvd_added":"digital_added";
   const docId=mkId(m.title)+"_"+m.id;
   const poster=m.poster_path?IMG+"w185"+m.poster_path:null;
   document.getElementById("add-btn").disabled=true;
   document.getElementById("add-btn").textContent="Adding...";
-  setDoc(doc(db,colName,docId),{title:m.title,poster:poster,tmdbId:m.id,type:m.type||"movie",addedAt:new Date().toISOString()})
+setDoc(doc(db,colName,docId),{title:m.title,poster:poster,tmdbId:m.id,type:m.type||"movie",addedAt:new Date().toISOString()})
   .then(()=>{
     const res=document.getElementById("add-result");
     res.className="add-result success";
@@ -651,39 +709,34 @@ renderChips();
 
 window.selectAiLib=function(lib){
   aiLib=lib;
-  ["all","dvd","digital"].forEach(l=>{
+["all","dvd","digital"].forEach(l=>{
     document.getElementById("ai-lib-"+l).className="lib-btn"+(l===lib?" ai-selected":"");
   });
 };
 
 window.askAI=async function(){
   const prompt=document.getElementById("ai-prompt").value.trim();
-  if(!prompt){
+if(!prompt){
     document.getElementById("ai-result").innerHTML='<div class="ai-error">Describe what you\'re in the mood for first!</div>';
     return;
   }
   const btn=document.getElementById("ai-btn");
   btn.disabled=true;btn.textContent="✨ Thinking...";
-  document.getElementById("ai-result").innerHTML='<div class="ai-thinking"><div class="ai-spinner"></div><div>Scanning your collection for the perfect match...</div></div>';
+document.getElementById("ai-result").innerHTML='<div class="ai-thinking"><div class="ai-spinner"></div><div>Scanning your collection for the perfect match...</div></div>';
 
   const pool=aiLib==="dvd"?dvdData:aiLib==="digital"?digData:[...dvdData,...digData];
-
-  // Safeguard: lookup of valid titles for post-validation
+// Safeguard: lookup of valid titles for post-validation
   const titleLookup={};
   pool.forEach(item=>{titleLookup[item.title.toLowerCase()]=item;});
-
-  const contextLines=pool.map(item=>{
+const contextLines=pool.map(item=>{
     const enriched=enrichmentCache[item.id]||{};
     const genres=(enriched.genres||[]).join("/")||"Unknown";
     const overview=(enriched.overview||"").slice(0,130).replace(/\s+/g," ");
     return item.title+" ["+item.tab.toUpperCase()+"] ("+genres+") — "+overview;
   }).join("\n");
-
-  const systemMsg="You are a thoughtful movie recommendation assistant for a family's personal home collection. You MUST ONLY recommend titles from the exact list provided by the user. Do NOT suggest any movie or show not in the list, even if it would be a better match. Use the genre tags and plot overviews to match the mood, not just keywords in titles. Return valid JSON only — no markdown fences, no extra text.";
-
-  const userMsg="User's mood: \""+prompt+"\"\n\nMy collection (the ONLY titles you may recommend):\n"+contextLines+"\n\nPick up to 5 titles that best match the mood. Return fewer if only a few truly fit — quality over quantity. Respond with exactly this JSON structure:\n{\"suggestions\":[{\"title\":\"exact title copied from the list above\",\"library\":\"dvd or digital\",\"reason\":\"one concise sentence explaining the match\"}]}";
-
-  try{
+const systemMsg="You are a thoughtful movie recommendation assistant for a family's personal home collection. You MUST ONLY recommend titles from the exact list provided by the user. Do NOT suggest any movie or show not in the list, even if it would be a better match. Use the genre tags and plot overviews to match the mood, not just keywords in titles. Return valid JSON only — no markdown fences, no extra text.";
+const userMsg="User's mood: \""+prompt+"\"\n\nMy collection (the ONLY titles you may recommend):\n"+contextLines+"\n\nPick up to 5 titles that best match the mood. Return fewer if only a few truly fit — quality over quantity. Respond with exactly this JSON structure:\n{\"suggestions\":[{\"title\":\"exact title copied from the list above\",\"library\":\"dvd or digital\",\"reason\":\"one concise sentence explaining the match\"}]}";
+try{
     const res=await fetch("https://openrouter.ai/api/v1/chat/completions",{
       method:"POST",
       headers:{
@@ -696,28 +749,29 @@ window.askAI=async function(){
         model:OPENROUTER_MODEL,
         messages:[
           {role:"system",content:systemMsg},
-          {role:"user",content:userMsg}
+         
+ {role:"user",content:userMsg}
         ],
         temperature:0.7,
         max_tokens:800
       })
     });
-    if(!res.ok){
+if(!res.ok){
       const errText=await res.text();
       console.error("OpenRouter error:",res.status,errText);
       throw new Error("AI service returned "+res.status);
-    }
+}
     const data=await res.json();
     const text=data.choices?.[0]?.message?.content||"";
     const cleaned=text.replace(/```json|```/g,"").trim();
     const jsonMatch=cleaned.match(/\{[\s\S]*\}/);
     if(!jsonMatch) throw new Error("No JSON in response");
-    const parsed=JSON.parse(jsonMatch[0]);
+const parsed=JSON.parse(jsonMatch[0]);
     const rawSuggestions=parsed.suggestions||[];
 
     // Safeguard: validate every suggestion against the real collection
     const validated=[];
-    rawSuggestions.forEach(s=>{
+rawSuggestions.forEach(s=>{
       if(!s.title) return;
       const match=titleLookup[s.title.toLowerCase().trim()];
       if(match){
@@ -729,13 +783,15 @@ window.askAI=async function(){
       } else {
         console.warn("AI suggested title not in collection, dropped:",s.title);
       }
-    });
+    
+});
 
     if(!validated.length){
-      document.getElementById("ai-result").innerHTML='<div class="ai-error">No good matches found. Try describing it differently — maybe mention a genre or vibe!</div>';
-    } else {
+      document.getElementById("ai-result").innerHTML='<div class="ai-error">No good matches found.
+Try describing it differently — maybe mention a genre or vibe!</div>';
+} else {
       let html='<div class="ai-results-header">'+validated.length+' pick'+(validated.length>1?"s":"")+' from your collection</div>';
-      validated.forEach(s=>{
+validated.forEach(s=>{
         const item=s.foundItem;
         const poster=item.poster?'<img src="'+item.poster+'" alt=""/>'
           :'<div class="ai-poster-ph">'+s.title.substring(0,3).toUpperCase()+'</div>';
@@ -745,22 +801,33 @@ window.askAI=async function(){
           +'<div class="ai-card-body">'
           +'<div class="ai-card-top">'
           +'<div class="ai-title">'+s.title+'</div>'
-          +'<div class="ai-reason">'+s.reason+'</div>'
+     
+      +'<div class="ai-reason">'+s.reason+'</div>'
           +'</div>'
           +'<div class="ai-lib '+libClass+'">'+(item.tab==="dvd"?"📀 DVD":"💾 Digital")+'</div>'
           +'</div>'
           +'</div>';
       });
-      document.getElementById("ai-result").innerHTML=html;
+document.getElementById("ai-result").innerHTML=html;
     }
   }catch(e){
     console.error("AI error:",e);
     document.getElementById("ai-result").innerHTML='<div class="ai-error">Something went wrong: '+e.message+'<br><br>Check that your OpenRouter key is valid and has credits.</div>';
-  }
+}
   btn.disabled=false;btn.textContent="✨ Get Recommendations";
 };
 
 document.getElementById("modal").addEventListener("click",function(e){if(e.target===this)closeModal();});
+
+// Splash Screen Timer
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const splash = document.getElementById('splash-screen');
+    if (splash) {
+      splash.classList.add('hidden');
+    }
+  }, 3000); // Hides after exactly 3 seconds
+});
 </script>
 
 </body>
