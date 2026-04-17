@@ -525,7 +525,7 @@ window.askGemini=async function(){
   const titleList=allTitles.map(t=>t.title+" ("+t.tab+")").join(", ");
   const gPrompt="You are a movie recommendation assistant. The user has these titles: "+titleList+". User says: \""+prompt+"\". Suggest up to 5 titles from their collection only. JSON only, no other text: {\"suggestions\":[{\"title\":\"exact title\",\"reason\":\"one sentence\",\"library\":\"dvd or digital\"}]}";
   try{
-    const res=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",{
+    const res=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",{
       method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":GEMINI},
       body:JSON.stringify({contents:[{parts:[{text:gPrompt}]}]})
     });
@@ -551,7 +551,8 @@ window.askGemini=async function(){
       document.getElementById("ai-result").innerHTML=html;
     }
   }catch(e){
-    document.getElementById("ai-result").innerHTML='<div class="ai-thinking">Could not get suggestions. Try again!</div>';
+    document.getElementById("ai-result").innerHTML='<div class="ai-thinking">Error: '+e.message+'. Try again!</div>';
+    console.error("Gemini error:", e);
   }
   btn.disabled=false;btn.textContent="Ask Gemini";
 };
