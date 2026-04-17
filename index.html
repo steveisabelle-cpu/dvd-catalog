@@ -172,7 +172,7 @@ const FB = { apiKey: "AIzaSyBBKgF3BXF3WOrVATkyH-ZR296KbPPG6m0", authDomain: "my-
 const app = initializeApp(FB);
 const db = getFirestore(app);
 const TMDB = "8670d5dc76f371b2ad77f98e626dfba2";
-const GEMINI = "AIzaSyAQAb8RN6Lbz7EciE6Ki-b3-kp-k60fbmLRpO-2ABtJLudWGuBIWA";
+const GEMINI = "AQ.Ab8RN6J_Jt2-PhEJhJDYU8OEehX8OVZVhXqwTeQp_R8Uuv90iA";
 const IMG = "https://image.tmdb.org/t/p/";
 
 const DVD_BASE = [
@@ -525,8 +525,8 @@ window.askGemini=async function(){
   const titleList=allTitles.map(t=>t.title+" ("+t.tab+")").join(", ");
   const gPrompt="You are a movie recommendation assistant. The user has these titles: "+titleList+". User says: \""+prompt+"\". Suggest up to 5 titles from their collection only. JSON only, no other text: {\"suggestions\":[{\"title\":\"exact title\",\"reason\":\"one sentence\",\"library\":\"dvd or digital\"}]}";
   try{
-    const res=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key="+GEMINI,{
-      method:"POST",headers:{"Content-Type":"application/json"},
+    const res=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",{
+      method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":GEMINI},
       body:JSON.stringify({contents:[{parts:[{text:gPrompt}]}]})
     });
     const data=await res.json();
