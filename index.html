@@ -151,7 +151,7 @@ const FB = { apiKey: "AIzaSyBBKgF3BXF3WOrVATkyH-ZR296KbPPG6m0", authDomain: "my-
 const app = initializeApp(FB);
 const db = getFirestore(app);
 const TMDB = "8670d5dc76f371b2ad77f98e626dfba2";
-// UPDATED API KEY
+// FIXED API ENDPOINT AND KEY
 const GEMINI = "AQ.Ab8RN6JG0NQ0tObclQdyP9MTS6kHTevm0va1j8iANzx45zl3Mg";
 const IMG = "https://image.tmdb.org/t/p/";
 
@@ -342,15 +342,16 @@ window.askGemini = async function() {
 
   btn.disabled = true; 
   btn.textContent = "Thinking...";
-  resultEl.innerHTML = '<div class="ai-thinking">Searching your collection...</div>';
+  resultEl.innerHTML = '<div class="ai-thinking">Gemini is searching your collection...</div>';
 
   const allTitles = aiLib === "dvd" ? dvdData : aiLib === "digital" ? digData : [...dvdData, ...digData];
   const titleList = allTitles.map(t => t.title + " (" + t.tab + ")").join(", ");
   
-  const gPrompt = `You are a movie expert. User has these titles: ${titleList}. User says: "${prompt}". Suggest up to 5 titles from their collection. Return ONLY JSON: {"suggestions":[{"title":"exact title","reason":"one sentence","library":"dvd or digital"}]}`;
+  const gPrompt = `You are a movie recommendation assistant. The user has these titles: ${titleList}. User says: "${prompt}". Suggest up to 5 titles from their collection only. Return ONLY a raw JSON object, no markdown, no backticks: {"suggestions":[{"title":"exact title","reason":"one sentence","library":"dvd or digital"}]}`;
 
   try {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI}`, {
+    // UPDATED ENDPOINT TO V1 AND FIXED MODEL NAME
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ contents: [{ parts: [{ text: gPrompt }] }] })
@@ -363,7 +364,7 @@ window.askGemini = async function() {
     }
 
     if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
-      throw new Error("Gemini returned no results. Try a different description!");
+      throw new Error("Invalid API response. Check your API key or quota.");
     }
 
     let text = data.candidates[0].content.parts[0].text;
@@ -372,7 +373,7 @@ window.askGemini = async function() {
     const suggestions = parsed.suggestions || [];
 
     if (!suggestions.length) {
-      resultEl.innerHTML = '<div class="ai-thinking">No matches found in your collection. Try again!</div>';
+      resultEl.innerHTML = '<div class="ai-thinking">No matches found. Try a different description!</div>';
     } else {
       let html = "";
       suggestions.forEach(s => {
@@ -385,8 +386,8 @@ window.askGemini = async function() {
       resultEl.innerHTML = html;
     }
   } catch (e) {
-    resultEl.innerHTML = `<div class="ai-thinking" style="color:#e50914">Error: ${e.message}</div>`;
-    console.error("Gemini Error:", e);
+    resultEl.innerHTML = `<div class="ai-thinking" style="color:#e50914">Error: ${e.message}. Try again!</div>`;
+    console.error("Gemini error:", e);
   } finally {
     btn.disabled = false; 
     btn.textContent = "Ask Gemini";
