@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -80,6 +79,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0a0a0a;
 .sri-title{font-size:14px;color:#fff;font-weight:600}
 .sri-year{font-size:12px;color:#888}
 .sri-type{font-size:10px;color:#0064c8;font-weight:700}
+.ai-card{background:#1a1a1a;border-radius:8px;padding:12px;margin-bottom:8px;cursor:pointer;display:flex;gap:12px;align-items:flex-start;border:1px solid #222}
+.ai-card:active{background:#252525}
+.ai-card img{width:40px;height:60px;object-fit:cover;border-radius:4px;flex-shrink:0}
+.ai-poster-ph{width:40px;height:60px;background:#333;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:#666;font-weight:700;text-align:center}
+.ai-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:4px}
+.ai-reason{font-size:12px;color:#888;line-height:1.5}
+.ai-lib{font-size:10px;color:#e50914;font-weight:700;margin-top:4px;text-transform:uppercase}
+.ai-thinking{text-align:center;padding:32px;color:#555;font-size:14px}
+.ai-lib-select{display:flex;gap:8px;margin-bottom:16px}
 </style>
 </head>
 <body>
@@ -89,6 +97,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0a0a0a;
     <div class="tab active" onclick="switchTab('dvd')">DVD</div>
     <div class="tab" onclick="switchTab('digital')">Digital</div>
     <div class="tab" onclick="switchTab('add')">+ Add</div>
+    <div class="tab" onclick="switchTab('ai')">Ask AI</div>
   </div>
 </div>
 <div class="search-wrap" id="search-wrap">
@@ -115,6 +124,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0a0a0a;
     </div>
     <button class="add-submit" id="add-btn" onclick="addTitle()" disabled>Select a title above</button>
     <div class="add-result" id="add-result"></div>
+  </div>
+</div>
+<div id="tab-ai" class="tab-content">
+  <div class="add-wrap">
+    <h2>Ask Gemini AI</h2>
+    <p style="font-size:13px;color:#666;margin-bottom:16px;line-height:1.6">Describe what you are in the mood for and Gemini will suggest titles from your collection.</p>
+    <textarea class="add-field" id="ai-prompt" style="height:90px;resize:none;line-height:1.5" placeholder="e.g. I want a disaster movie, or something funny for family night..."></textarea>
+    <div style="margin-bottom:8px;font-size:13px;color:#666">Search in:</div>
+    <div class="ai-lib-select">
+      <div class="lib-btn selected" id="ai-lib-all" onclick="selectAiLib('all')">All</div>
+      <div class="lib-btn" id="ai-lib-dvd" onclick="selectAiLib('dvd')">DVD Only</div>
+      <div class="lib-btn" id="ai-lib-digital" onclick="selectAiLib('digital')">Digital Only</div>
+    </div>
+    <button class="add-submit" id="ai-btn" onclick="askGemini()">Ask Gemini</button>
+    <div id="ai-result" style="margin-top:16px"></div>
   </div>
 </div>
 <div class="modal-overlay" id="modal">
@@ -148,6 +172,7 @@ const FB = { apiKey: "AIzaSyBBKgF3BXF3WOrVATkyH-ZR296KbPPG6m0", authDomain: "my-
 const app = initializeApp(FB);
 const db = getFirestore(app);
 const TMDB = "8670d5dc76f371b2ad77f98e626dfba2";
+const GEMINI = "AIzaSyAQAb8RN6Lbz7EciE6Ki-b3-kp-k60fbmLRpO-2ABtJLudWGuBIWA";
 const IMG = "https://image.tmdb.org/t/p/";
 
 const DVD_BASE = [
@@ -244,7 +269,7 @@ const DIG_BASE = [
   {title:"Supernatural",type:"tv"}
 ];
 
-let dvdData=[], digData=[], currentTab="dvd", currentModalItem=null, selectedLib="dvd", selectedAddMovie=null, addTimer=null, selectedType="movie";
+let dvdData=[], digData=[], currentTab="dvd", currentModalItem=null, selectedLib="dvd", selectedAddMovie=null, addTimer=null, selectedType="movie", aiLib="all";
 let fbDvdAdded=[], fbDvdDeleted=[], fbDigAdded=[], fbDigDeleted=[];
 
 function sortArr(arr){
@@ -253,27 +278,15 @@ function sortArr(arr){
     return c(a)<c(b)?-1:c(a)>c(b)?1:0;
   });
 }
+function lgr(title){const t=title||"";return /[0-9]/.test(t[0])?"#":t[0].toUpperCase();}
+function mkId(t){return t.replace(/[^a-zA-Z0-9]/g,"_");}
 
-function lgr(title){
-  const t=title||"";
-  return /[0-9]/.test(t[0])?"#":t[0].toUpperCase();
-}
-
-function mkId(t){ return t.replace(/[^a-zA-Z0-9]/g,"_"); }
-
-function renderGrid(list, elId){
+function renderGrid(list,elId){
   const el=document.getElementById(elId);
   if(!list.length){el.innerHTML='<div class="no-results">No titles found</div>';return;}
   const groups={};
-  list.forEach(function(item){
-    const g=lgr(item.title);
-    if(!groups[g]){groups[g]=[];}
-    groups[g].push(item);
-  });
-  const order=Object.keys(groups).sort(function(a,b){
-    if(a==="#")return -1;if(b==="#")return 1;
-    return a.localeCompare(b);
-  });
+  list.forEach(function(item){const g=lgr(item.title);if(!groups[g])groups[g]=[];groups[g].push(item);});
+  const order=Object.keys(groups).sort(function(a,b){if(a==="#")return -1;if(b==="#")return 1;return a.localeCompare(b);});
   let html="";
   order.forEach(function(g){
     html+='<div class="section-header">'+g+'</div><div class="movie-grid">';
@@ -297,13 +310,11 @@ function rebuild(){
   fbDvdAdded.forEach(item=>dvdAll.push({title:item.title,poster:item.poster||null,custom:true,tab:"dvd",_docId:item._docId,tmdbId:item.tmdbId,type:item.type||"movie"}));
   dvdAll=sortArr(dvdAll);
   dvdData=dvdAll.map((item,i)=>({...item,tab:"dvd",num:i+1,id:mkId(item.title)}));
-
   const digTitles=DIG_BASE.filter(b=>!fbDigDeleted.includes(b.title));
   let digAll=[...digTitles];
   fbDigAdded.forEach(item=>digAll.push({title:item.title,poster:item.poster||null,custom:true,tab:"digital",_docId:item._docId,tmdbId:item.tmdbId,type:item.type||"movie"}));
   digAll=sortArr(digAll);
   digData=digAll.map((item,i)=>({...item,tab:"digital",num:i+1,id:mkId(item.title)}));
-
   renderGrid(dvdData,"list-dvd");
   renderGrid(digData,"list-digital");
   if(currentTab==="dvd")document.getElementById("stats").textContent=dvdData.length+" titles";
@@ -326,8 +337,7 @@ function loadPosters(data,elId){
     const q=item.title.replace(/^(The|A|An) /i,"").replace(/[^a-zA-Z0-9 ]/g,"").trim();
     const ep=item.type==="tv"?"search/tv":"search/movie";
     fetch("https://api.themoviedb.org/3/"+ep+"?api_key="+TMDB+"&query="+encodeURIComponent(q)+"&language=en-US&page=1")
-    .then(r=>r.json())
-    .then(d=>{
+    .then(r=>r.json()).then(d=>{
       if(d.results&&d.results.length>0&&d.results[0].poster_path){
         item.poster=IMG+"w185"+d.results[0].poster_path;
         const card=document.getElementById("card-"+elId+"-"+item.id);
@@ -346,19 +356,16 @@ window.switchTab=function(tab){
   currentTab=tab;
   document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
   document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));
-  document.querySelector('[onclick="switchTab(\''+tab+'\')"]').classList.add("active");
+  const tabs=["dvd","digital","add","ai"];
+  document.querySelectorAll(".tab")[tabs.indexOf(tab)].classList.add("active");
   document.getElementById("tab-"+tab).classList.add("active");
-  const sw=document.getElementById("search-wrap");
-  const st=document.getElementById("stats");
-  sw.style.display=tab==="add"?"none":"flex";
-  st.style.display=tab==="add"?"none":"block";
-  if(tab!=="add"){document.getElementById("search").value="";const data=tab==="dvd"?dvdData:digData;st.textContent=data.length+" titles";}
+  const hide=tab==="add"||tab==="ai";
+  document.getElementById("search-wrap").style.display=hide?"none":"flex";
+  document.getElementById("stats").style.display=hide?"none":"block";
+  if(!hide){document.getElementById("search").value="";const data=tab==="dvd"?dvdData:digData;document.getElementById("stats").textContent=data.length+" titles";}
 };
 
-window.clearSearch=function(){
-  document.getElementById("search").value="";
-  filterList();
-};
+window.clearSearch=function(){document.getElementById("search").value="";filterList();};
 
 window.filterList=function(){
   const q=document.getElementById("search").value.toLowerCase();
@@ -389,8 +396,7 @@ window.showDetail=function(tab,id){
   const q=item.title.replace(/^(The|A|An) /i,"").replace(/[^a-zA-Z0-9 ]/g,"").trim();
   const ep=item.type==="tv"?"search/tv":"search/movie";
   fetch("https://api.themoviedb.org/3/"+ep+"?api_key="+TMDB+"&query="+encodeURIComponent(q)+"&language=en-US&page=1")
-  .then(r=>r.json())
-  .then(d=>{
+  .then(r=>r.json()).then(d=>{
     if(d.results&&d.results.length>0){
       const m=d.results[0];
       const tk=item.type==="tv"?"name":"title";
@@ -403,8 +409,7 @@ window.showDetail=function(tab,id){
       if(m.poster_path)document.getElementById("modal-poster").innerHTML='<img src="'+IMG+"w185"+m.poster_path+'" alt=""/>';
       return fetch("https://api.themoviedb.org/3/"+(item.type==="tv"?"tv":"movie")+"/"+m.id+"?api_key="+TMDB);
     }
-  })
-  .then(r=>{if(r)return r.json();})
+  }).then(r=>{if(r)return r.json();})
   .then(d=>{if(d&&d.genres&&d.genres.length)document.getElementById("modal-tags").innerHTML=d.genres.map(g=>'<span class="modal-tag">'+g.name+'</span>').join("");})
   .catch(()=>{document.getElementById("modal-overview").textContent="Could not load details.";});
 };
@@ -421,11 +426,8 @@ window.deleteCurrentMovie=function(){
   if(!confirm('Remove "'+item.title+'" from your collection?'))return;
   const colName=item.tab==="dvd"?(item.custom?"dvd_added":"dvd_deleted"):(item.custom?"digital_added":"digital_deleted");
   const docId=item.custom?(item._docId||mkId(item.title)+"_"+item.tmdbId):mkId(item.title);
-  if(item.custom){
-    deleteDoc(doc(db,colName,docId)).then(()=>closeModal()).catch(()=>alert("Could not remove. Try again."));
-  } else {
-    setDoc(doc(db,colName,mkId(item.title)),{title:item.title}).then(()=>closeModal()).catch(()=>alert("Could not remove. Try again."));
-  }
+  if(item.custom){deleteDoc(doc(db,colName,docId)).then(()=>closeModal()).catch(()=>alert("Could not remove. Try again."));}
+  else{setDoc(doc(db,colName,mkId(item.title)),{title:item.title}).then(()=>closeModal()).catch(()=>alert("Could not remove. Try again."));}
 };
 
 window.selectType=function(type){
@@ -440,8 +442,7 @@ window.selectType=function(type){
 };
 
 window.searchForAdd=function(){
-  clearTimeout(addTimer);
-  selectedAddMovie=null;
+  clearTimeout(addTimer);selectedAddMovie=null;
   document.getElementById("add-btn").disabled=true;
   document.getElementById("add-btn").textContent="Select a title above";
   const q=document.getElementById("add-search").value.trim();
@@ -449,19 +450,16 @@ window.searchForAdd=function(){
   addTimer=setTimeout(()=>{
     const ep=selectedType==="tv"?"search/tv":"search/movie";
     fetch("https://api.themoviedb.org/3/"+ep+"?api_key="+TMDB+"&query="+encodeURIComponent(q)+"&language=en-US&page=1")
-    .then(r=>r.json())
-    .then(d=>{
+    .then(r=>r.json()).then(d=>{
       if(!d.results||!d.results.length){document.getElementById("add-results").innerHTML='<div style="color:#555;font-size:13px;padding:8px">No results</div>';return;}
       let html="";
       d.results.slice(0,6).forEach(m=>{
         const tk=selectedType==="tv"?"name":"title";
         const dk=selectedType==="tv"?"first_air_date":"release_date";
         const yr=m[dk]?m[dk].substring(0,4):"";
-        const th=m.poster_path?'<img src="'+IMG+"w92"+m.poster_path+'" alt=""/>'
-          :'<div style="width:30px;height:45px;background:#333;border-radius:3px"></div>';
+        const th=m.poster_path?'<img src="'+IMG+"w92"+m.poster_path+'" alt=""/>':'<div style="width:30px;height:45px;background:#333;border-radius:3px"></div>';
         const tl=selectedType==="tv"?'<div class="sri-type">TV Show</div>':"";
-        const mData={id:m.id,title:m[tk],poster_path:m.poster_path||null,release_date:m[dk]||"",type:selectedType};
-        const mStr=JSON.stringify(mData).replace(/"/g,"&quot;");
+        const mStr=JSON.stringify({id:m.id,title:m[tk],poster_path:m.poster_path||null,release_date:m[dk]||"",type:selectedType}).replace(/"/g,"&quot;");
         html+='<div class="search-result-item" onclick="selectAddMovie(JSON.parse(this.dataset.m))" data-m="'+mStr+'">'+th+'<div><div class="sri-title">'+m[tk]+'</div><div class="sri-year">'+yr+'</div>'+tl+'</div></div>';
       });
       document.getElementById("add-results").innerHTML=html;
@@ -501,8 +499,7 @@ window.addTitle=function(){
     document.getElementById("add-btn").textContent="Select a title above";
     selectedAddMovie=null;
     setTimeout(()=>{res.className="add-result";},3000);
-  })
-  .catch(()=>{
+  }).catch(()=>{
     const res=document.getElementById("add-result");
     res.className="add-result error";
     res.textContent="Failed to add. Try again.";
@@ -511,8 +508,55 @@ window.addTitle=function(){
   });
 };
 
+window.selectAiLib=function(lib){
+  aiLib=lib;
+  ["all","dvd","digital"].forEach(l=>{
+    document.getElementById("ai-lib-"+l).className="lib-btn"+(l===lib?" selected":"");
+  });
+};
+
+window.askGemini=async function(){
+  const prompt=document.getElementById("ai-prompt").value.trim();
+  if(!prompt){alert("Please describe what you are looking for!");return;}
+  const btn=document.getElementById("ai-btn");
+  btn.disabled=true;btn.textContent="Thinking...";
+  document.getElementById("ai-result").innerHTML='<div class="ai-thinking">Gemini is searching your collection...</div>';
+  const allTitles=aiLib==="dvd"?dvdData:aiLib==="digital"?digData:[...dvdData,...digData];
+  const titleList=allTitles.map(t=>t.title+" ("+t.tab+")").join(", ");
+  const gPrompt="You are a movie recommendation assistant. The user has these titles: "+titleList+". User says: \""+prompt+"\". Suggest up to 5 titles from their collection only. JSON only, no other text: {\"suggestions\":[{\"title\":\"exact title\",\"reason\":\"one sentence\",\"library\":\"dvd or digital\"}]}";
+  try{
+    const res=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key="+GEMINI,{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({contents:[{parts:[{text:gPrompt}]}]})
+    });
+    const data=await res.json();
+    const text=data.candidates[0].content.parts[0].text;
+    const parsed=JSON.parse(text.replace(/```json|```/g,"").trim());
+    const suggestions=parsed.suggestions||[];
+    if(!suggestions.length){
+      document.getElementById("ai-result").innerHTML='<div class="ai-thinking">No matches found. Try a different description!</div>';
+    } else {
+      let html='<div style="font-size:12px;color:#555;margin-bottom:10px">'+suggestions.length+' suggestion'+(suggestions.length>1?"s":"")+" from your collection:</div>";
+      suggestions.forEach(s=>{
+        const found=allTitles.find(t=>t.title.toLowerCase()===s.title.toLowerCase());
+        const poster=found&&found.poster?'<img src="'+found.poster+'" alt=""/>'
+          :'<div class="ai-poster-ph">'+s.title.substring(0,3).toUpperCase()+'</div>';
+        const ftab=found?found.tab:"dvd";
+        const fid=found?found.id:"";
+        html+='<div class="ai-card" data-tab="'+ftab+'" data-id="'+fid+'" onclick="showDetail(this.dataset.tab,this.dataset.id)">'
+          +poster+'<div><div class="ai-title">'+s.title+'</div>'
+          +'<div class="ai-reason">'+s.reason+'</div>'
+          +'<div class="ai-lib">'+(s.library==="dvd"?"DVD":"Digital")+'</div></div></div>';
+      });
+      document.getElementById("ai-result").innerHTML=html;
+    }
+  }catch(e){
+    document.getElementById("ai-result").innerHTML='<div class="ai-thinking">Could not get suggestions. Try again!</div>';
+  }
+  btn.disabled=false;btn.textContent="Ask Gemini";
+};
+
 document.getElementById("modal").addEventListener("click",function(e){if(e.target===this)closeModal();});
 </script>
-
 </body>
 </html>
