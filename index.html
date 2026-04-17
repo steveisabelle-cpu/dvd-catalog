@@ -2,28 +2,31 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <title>Movie Deluxe</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0a0a0a;color:#fff;min-height:100vh}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0a0a0a;color:#fff;min-height:100vh;padding-bottom:50px}
 .header{background:#111;padding:16px 16px 0;position:sticky;top:0;z-index:100;border-bottom:1px solid #222}
-.header h1{font-size:22px;font-weight:800;letter-spacing:-0.5px;margin-bottom:12px;color:#fff}
+.header h1{font-size:22px;font-weight:800;letter-spacing:-0.5px;margin-bottom:12px}
 .tabs{display:flex;gap:0}
-.tab{flex:1;padding:10px 0;text-align:center;font-size:13px;font-weight:600;color:#666;cursor:pointer;border-bottom:2px solid transparent}
+.tab{flex:1;padding:12px 0;text-align:center;font-size:13px;font-weight:600;color:#666;cursor:pointer;border-bottom:2px solid transparent}
 .tab.active{color:#fff;border-bottom-color:#e50914}
-.search-wrap{padding:10px 16px 6px;background:#0a0a0a;position:sticky;top:107px;z-index:99;display:flex;gap:8px;align-items:center}
-.search-wrap input{flex:1;padding:10px 16px;font-size:15px;border:none;border-radius:8px;background:#1e1e1e;color:#fff;outline:none}
-.home-btn{width:38px;height:38px;background:#1e1e1e;border:none;border-radius:8px;color:#888;font-size:18px}
-.tab-content{display:none;padding:16px}
+.search-wrap{padding:12px 16px;background:#0a0a0a;position:sticky;top:107px;z-index:99;display:flex;gap:8px}
+.search-wrap input{flex:1;padding:12px;font-size:16px;border:none;border-radius:8px;background:#1e1e1e;color:#fff;outline:none}
+.home-btn{width:44px;background:#1e1e1e;border:none;border-radius:8px;color:#888;font-size:20px}
+.tab-content{display:none;padding:0 16px}
 .tab-content.active{display:block}
-.movie-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.movie-card{cursor:pointer;border-radius:6px;overflow:hidden;background:#1a1a1a;aspect-ratio:2/3;display:flex;align-items:center;justify-content:center;text-align:center;font-size:10px;padding:5px;border:1px solid #222}
-.add-field{width:100%;padding:14px;border-radius:8px;background:#1e1e1e;color:#fff;border:none;margin-bottom:12px;font-size:16px}
+.movie-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding-top:10px}
+.movie-card{border-radius:8px;overflow:hidden;background:#1a1a1a;aspect-ratio:2/3;position:relative;display:flex;align-items:center;justify-content:center;text-align:center;border:1px solid #222;font-size:11px}
+.movie-card img{width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0}
+.placeholder-text{padding:10px;color:#444;font-weight:bold}
+.add-wrap{padding:20px 0}
+.add-field{width:100%;padding:14px;border-radius:8px;background:#1e1e1e;color:#fff;border:1px solid #333;margin-bottom:12px;font-size:16px}
 .add-submit{width:100%;padding:16px;background:#e50914;color:#fff;font-weight:700;border:none;border-radius:8px;font-size:16px}
-.ai-card{background:#1a1a1a;border-radius:8px;padding:15px;margin-bottom:10px;border:1px solid #333}
-.ai-title{font-size:17px;font-weight:800;color:#e50914;margin-bottom:4px}
+.ai-card{background:#1a1a1a;border-radius:10px;padding:15px;margin-bottom:12px;border:1px solid #333;border-left:4px solid #e50914}
+.ai-title{font-size:17px;font-weight:800;color:#fff;margin-bottom:4px}
 .ai-reason{font-size:14px;color:#bbb;line-height:1.4}
 #ai-result{margin-top:20px}
 </style>
@@ -35,61 +38,127 @@ body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0a0a0a;
   <div class="tabs">
     <div class="tab active" onclick="switchTab('dvd')">DVD</div>
     <div class="tab" onclick="switchTab('digital')">Digital</div>
+    <div class="tab" onclick="switchTab('add')">+ Add</div>
     <div class="tab" onclick="switchTab('ai')">Ask AI</div>
   </div>
 </div>
 
-<div class="search-wrap" id="search-wrap">
-  <input type="search" id="search" placeholder="Search collection..." oninput="filterList()"/>
+<div class="search-wrap" id="search-box">
+  <input type="search" id="main-search" placeholder="Search collection..." oninput="renderAll()"/>
   <button class="home-btn" onclick="location.reload()">&#8962;</button>
 </div>
 
-<div id="tab-dvd" class="tab-content active"><div class="movie-grid" id="list-dvd"></div></div>
-<div id="tab-digital" class="tab-content"><div class="movie-grid" id="list-digital"></div></div>
+<div id="tab-dvd" class="tab-content active"><div class="movie-grid" id="grid-dvd"></div></div>
+<div id="tab-digital" class="tab-content"><div class="movie-grid" id="grid-digital"></div></div>
+
+<div id="tab-add" class="tab-content">
+  <div class="add-wrap">
+    <h2>Add Title</h2>
+    <input type="text" class="add-field" id="new-title" placeholder="Search TMDB for a movie..."/>
+    <select class="add-field" id="new-type">
+      <option value="dvd">DVD</option>
+      <option value="digital">Digital</option>
+    </select>
+    <button class="add-submit" id="add-btn" onclick="searchAndSave()">Search & Add</button>
+  </div>
+</div>
 
 <div id="tab-ai" class="tab-content">
-  <h2 style="margin-bottom:15px">Ask Gemini</h2>
-  <textarea class="add-field" id="ai-prompt" style="height:120px;resize:none" placeholder="e.g. Find me a comedy from my list that has Will Ferrell..."></textarea>
-  <button class="add-submit" id="ai-btn" onclick="askGemini()">Ask Gemini</button>
-  <div id="ai-result"></div>
+  <div class="add-wrap">
+    <h2>Ask Gemini</h2>
+    <textarea class="add-field" id="ai-prompt" style="height:100px;resize:none" placeholder="Suggest something... (e.g. 'Funny movies with dogs')"></textarea>
+    <button class="add-submit" id="ai-btn" onclick="askGemini()">Ask Gemini</button>
+    <div id="ai-result"></div>
+  </div>
 </div>
 
 <script type="module">
-// LIBRARIES
-const TMDB = "8670d5dc76f371b2ad77f98e626dfba2";
-// YOUR NEW KEY INCORPORATED HERE
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, onSnapshot, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// KEYS
+const TMDB_KEY = "8670d5dc76f371b2ad77f98e626dfba2";
 const GEMINI_KEY = "AQ.Ab8RN6LIAHe_pUU_VinBWJM50ft4XQEKtx_KvpeS1plvYPCXag";
+const firebaseConfig = { apiKey: "AIzaSyBBKgF3BXF3WOrVATkyH-ZR296KbPPG6m0", authDomain: "my-movie-catalog-2acdc.firebaseapp.com", projectId: "my-movie-catalog-2acdc", storageBucket: "my-movie-catalog-2acdc.firebasestorage.app", appId: "1:653525309773:web:d931c15ce41e6673f37f04" };
 
-const DVD_BASE = ["21", "22 Jump Street", "2012", "50 First Dates", "Alien", "Aliens", "Avatar", "Batman vs Superman", "Black Panther", "Die Hard", "Fast 5", "Gladiator", "Inception", "Iron Man", "John Wick", "Jurassic World", "Logan", "The Matrix", "Predator", "Rambo", "Star Wars", "The Dark Knight", "Transformers", "X-Men"];
-const DIG_BASE = ["65", "Airplane", "Beetlejuice", "Blade", "Civil War", "Django Unchained", "Indiana Jones", "Inside Out 2", "Jurassic Park", "The Lego Movie", "Top Gun Maverick", "Venom"];
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-let currentTab = "dvd";
+let allMovies = [];
 
-function renderGrids() {
-  document.getElementById('list-dvd').innerHTML = DVD_BASE.map(t => `<div class="movie-card">${t}</div>`).join('');
-  document.getElementById('list-digital').innerHTML = DIG_BASE.map(t => `<div class="movie-card">${t}</div>`).join('');
+// FETCH FROM FIREBASE
+onSnapshot(collection(db, "movies"), (snapshot) => {
+  allMovies = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  renderAll();
+});
+
+window.renderAll = () => {
+  const searchTerm = document.getElementById('main-search').value.toLowerCase();
+  const filtered = allMovies.filter(m => m.title.toLowerCase().includes(searchTerm));
+  
+  updateGrid('grid-dvd', filtered.filter(m => m.type === 'dvd'));
+  updateGrid('grid-digital', filtered.filter(m => m.type === 'digital'));
+};
+
+function updateGrid(id, list) {
+  const el = document.getElementById(id);
+  el.innerHTML = list.map(m => `
+    <div class="movie-card">
+      ${m.poster ? `<img src="https://image.tmdb.org/t/p/w200${m.poster}">` : `<div class="placeholder-text">${m.title}</div>`}
+    </div>
+  `).join('');
 }
 
 window.switchTab = (t) => {
-  currentTab = t;
-  document.querySelectorAll('.tab').forEach((el, i) => el.classList.toggle('active', ['dvd','digital','ai'][i] === t));
+  document.querySelectorAll('.tab').forEach((el, i) => el.classList.toggle('active', ['dvd','digital','add','ai'][i] === t));
   document.querySelectorAll('.tab-content').forEach(el => el.classList.toggle('active', el.id === 'tab-'+t));
-  document.getElementById('search-wrap').style.display = t === 'ai' ? 'none' : 'flex';
+  document.getElementById('search-box').style.display = (t==='add'||t==='ai') ? 'none' : 'flex';
+};
+
+window.searchAndSave = async () => {
+  const title = document.getElementById('new-title').value.trim();
+  const type = document.getElementById('new-type').value;
+  const btn = document.getElementById('add-btn');
+  if(!title) return;
+
+  btn.disabled = true;
+  btn.textContent = "Searching TMDB...";
+
+  try {
+    const res = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${TMDB_KEY}&query=${encodeURIComponent(title)}`);
+    const data = await res.json();
+    const movie = data.results[0];
+
+    if(!movie) throw new Error("Movie not found");
+
+    await setDoc(doc(db, "movies", movie.id.toString()), {
+      title: movie.title,
+      poster: movie.poster_path,
+      type: type,
+      overview: movie.overview
+    });
+
+    document.getElementById('new-title').value = '';
+    alert(`Added: ${movie.title}`);
+  } catch(e) {
+    alert(e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Search & Add";
+  }
 };
 
 window.askGemini = async function() {
-  const prompt = document.getElementById("ai-prompt").value.trim();
-  const resultEl = document.getElementById("ai-result");
+  const prompt = document.getElementById("ai-prompt").value;
+  const resEl = document.getElementById("ai-result");
   const btn = document.getElementById("ai-btn");
-  
-  if (!prompt) return alert("Please enter a request.");
+  if(!prompt) return;
 
   btn.disabled = true;
-  btn.textContent = "Searching Library...";
-  resultEl.innerHTML = "Thinking...";
+  resEl.innerHTML = "Asking your movie librarian...";
 
-  const titles = [...DVD_BASE, ...DIG_BASE].join(", ");
-  const gPrompt = `You are a movie expert. Based ONLY on this list: ${titles}, answer the request: "${prompt}". Suggest 3 movies. Return ONLY JSON: {"suggestions":[{"title":"Movie Name","reason":"Short explanation"}]}`;
+  const titles = allMovies.map(m => m.title).join(", ");
+  const gPrompt = `From this list: ${titles}, recommend 3 for: "${prompt}". Return ONLY JSON: {"suggestions":[{"title":"Name","reason":"Why"}]}`;
 
   try {
     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`, {
@@ -97,34 +166,24 @@ window.askGemini = async function() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ contents: [{ parts: [{ text: gPrompt }] }] })
     });
-
     const data = await res.json();
+    if(data.error) throw new Error(data.error.message);
 
-    // Check for Google-side errors (New AQ Key issues)
-    if (data.error) throw new Error(data.error.message);
-
-    const text = data.candidates[0].content.parts[0].text.replace(/```json|```/g, "").trim();
+    const text = data.candidates[0].content.parts[0].text.replace(/```json|```/g, "");
     const json = JSON.parse(text);
 
-    resultEl.innerHTML = json.suggestions.map(s => `
+    resEl.innerHTML = json.suggestions.map(s => `
       <div class="ai-card">
         <div class="ai-title">${s.title}</div>
         <div class="ai-reason">${s.reason}</div>
       </div>
     `).join('');
-
-  } catch (e) {
-    resultEl.innerHTML = `<div style="color:#e50914; border:1px solid #e50914; padding:10px; border-radius:8px;">
-      <strong>Sync Error:</strong> ${e.message}<br>
-      <small>Ensure 'Generative Language API' is enabled in Google AI Studio.</small>
-    </div>`;
+  } catch(e) {
+    resEl.innerHTML = `<div style="color:red; padding:10px; border:1px solid red; border-radius:8px;">AI Error: ${e.message}</div>`;
   } finally {
     btn.disabled = false;
-    btn.textContent = "Ask Gemini";
   }
 };
-
-renderGrids();
 </script>
 </body>
 </html>
