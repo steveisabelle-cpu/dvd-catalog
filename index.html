@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -16,15 +15,14 @@
 html,body{background:#0a0a0f}
 body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;color:#fff;min-height:100vh;background:linear-gradient(180deg,#0a0a0f 0%,#0d0d14 100%);background-attachment:fixed}
 
-/* Header */
 .header{background:linear-gradient(180deg,rgba(10,10,15,0.98) 0%,rgba(10,10,15,0.92) 100%);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:18px 18px 0;position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(255,255,255,0.06)}
 .header h1{font-size:20px;font-weight:800;letter-spacing:-0.5px;margin-bottom:14px;background:linear-gradient(135deg,#fff 0%,#ffb3b3 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .tabs{display:flex;gap:4px;background:rgba(255,255,255,0.04);padding:4px;border-radius:12px;margin-bottom:2px}
 .tab{flex:1;padding:9px 0;text-align:center;font-size:13px;font-weight:600;color:#8a8a94;cursor:pointer;border-radius:8px;transition:all 0.2s ease}
 .tab.active{color:#fff;background:linear-gradient(135deg,#e50914 0%,#b20710 100%);box-shadow:0 2px 8px rgba(229,9,20,0.35)}
+.tab.ai-tab.active{background:linear-gradient(135deg,#8b5cf6 0%,#6d28d9 100%);box-shadow:0 2px 8px rgba(139,92,246,0.4)}
 
-/* Search */
-.search-wrap{padding:12px 18px 4px;background:transparent;position:sticky;top:109px;z-index:99;display:flex;gap:10px;align-items:center;background:rgba(10,10,15,0.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.search-wrap{padding:12px 18px 4px;position:sticky;top:109px;z-index:99;display:flex;gap:10px;align-items:center;background:rgba(10,10,15,0.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
 .search-input-wrap{flex:1;position:relative}
 .search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#555;pointer-events:none;font-size:14px}
 .search-wrap input{width:100%;padding:11px 16px 11px 38px;font-size:15px;border:1px solid rgba(255,255,255,0.08);border-radius:10px;background:rgba(255,255,255,0.05);color:#fff;outline:none;transition:all 0.2s ease}
@@ -34,43 +32,39 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
 .home-btn:active{background:rgba(255,255,255,0.1);transform:scale(0.95)}
 
 #stats{font-size:12px;color:#666;padding:8px 18px 4px;font-weight:500;letter-spacing:0.02em}
+#enrich-status{font-size:11px;color:#a78bfa;padding:0 18px 6px;font-weight:500;display:none}
 
-/* Section headers */
 .section-header{font-size:13px;font-weight:800;color:#fff;letter-spacing:0.02em;padding:16px 18px 8px;display:flex;align-items:center;gap:10px}
-.section-header::before{content:””;display:block;width:3px;height:16px;background:linear-gradient(180deg,#e50914,#ff4757);border-radius:2px}
-.section-header::after{content:””;flex:1;height:1px;background:linear-gradient(90deg,rgba(255,255,255,0.08),transparent);margin-left:4px}
+.section-header::before{content:"";display:block;width:3px;height:16px;background:linear-gradient(180deg,#e50914,#ff4757);border-radius:2px}
+.section-header::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(255,255,255,0.08),transparent);margin-left:4px}
 
-/* Grid */
 .movie-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 18px 6px}
 .movie-card{cursor:pointer;border-radius:10px;overflow:hidden;background:#16161d;position:relative;aspect-ratio:2/3;box-shadow:0 4px 14px rgba(0,0,0,0.4);transition:transform 0.15s ease,box-shadow 0.15s ease}
 .movie-card:active{transform:scale(0.96);box-shadow:0 2px 8px rgba(0,0,0,0.5)}
 .movie-card img{width:100%;height:100%;object-fit:cover;display:block}
-.movie-card::after{content:””;position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,rgba(0,0,0,0.5) 100%);pointer-events:none;opacity:0;transition:opacity 0.2s ease}
+.movie-card::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,rgba(0,0,0,0.5) 100%);pointer-events:none;opacity:0;transition:opacity 0.2s ease}
 .movie-card:active::after{opacity:1}
 .placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#1e1e28 0%,#14141a 100%);padding:10px;text-align:center}
 .placeholder .abbr{font-size:22px;font-weight:800;color:#3a3a48;margin-bottom:6px;letter-spacing:0.05em}
 .placeholder .ptitle{font-size:9px;color:#5a5a68;line-height:1.3;font-weight:500}
 
-/* Badges */
 .num-badge{position:absolute;top:6px;left:6px;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);color:#ccc;font-size:9px;font-weight:700;padding:3px 6px;border-radius:5px;letter-spacing:0.05em}
 .new-badge{position:absolute;top:6px;right:6px;background:linear-gradient(135deg,#e50914,#ff1f2d);color:#fff;font-size:8px;font-weight:800;padding:3px 6px;border-radius:5px;letter-spacing:0.08em;box-shadow:0 2px 6px rgba(229,9,20,0.5)}
 .tv-card-badge{position:absolute;bottom:6px;left:6px;background:linear-gradient(135deg,#0077ff,#0055cc);color:#fff;font-size:8px;font-weight:800;padding:3px 6px;border-radius:5px;letter-spacing:0.08em;box-shadow:0 2px 6px rgba(0,119,255,0.4)}
 
-/* Tabs */
 .tab-content{display:none;animation:fadeIn 0.25s ease}
 .tab-content.active{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 
 .no-results{padding:80px 18px;text-align:center;color:#4a4a54;font-size:15px;font-weight:500}
 
-/* Modal */
 .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(5,5,10,0.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);z-index:1000;overflow-y:auto;display:none;-webkit-overflow-scrolling:touch}
 .modal-overlay.open{display:block;animation:modalIn 0.25s ease}
 @keyframes modalIn{from{opacity:0}to{opacity:1}}
 .modal{max-width:500px;margin:0 auto}
 .modal-backdrop-wrap{position:relative;width:100%;height:280px;overflow:hidden;background:#16161d}
 .modal-backdrop-wrap img{width:100%;height:100%;object-fit:cover;display:block;opacity:0.6}
-.modal-backdrop-wrap::after{content:””;position:absolute;inset:0;background:linear-gradient(180deg,transparent 0%,rgba(10,10,15,0.4) 60%,#0a0a0f 100%)}
+.modal-backdrop-wrap::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 0%,rgba(10,10,15,0.4) 60%,#0a0a0f 100%)}
 .modal-close{position:fixed;top:16px;right:16px;width:36px;height:36px;background:rgba(0,0,0,0.65);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:1001;color:#fff;font-size:15px;font-weight:600;transition:all 0.15s ease}
 .modal-close:active{transform:scale(0.9);background:rgba(229,9,20,0.8)}
 .modal-body{padding:0 20px 60px;position:relative;z-index:2}
@@ -89,12 +83,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
 .delete-btn{width:100%;padding:14px;background:rgba(229,9,20,0.1);border:1px solid rgba(229,9,20,0.4);color:#ff4757;font-size:15px;font-weight:600;border-radius:12px;cursor:pointer;transition:all 0.15s ease;letter-spacing:0.01em}
 .delete-btn:active{background:linear-gradient(135deg,#e50914,#b20710);color:#fff;border-color:#e50914;transform:scale(0.98)}
 
-/* Add tab */
 .add-wrap{padding:24px 18px}
 .add-wrap h2{font-size:22px;font-weight:800;margin-bottom:6px;letter-spacing:-0.02em}
 .add-sub{font-size:13px;color:#7a7a84;margin-bottom:20px;line-height:1.5}
 .add-field{width:100%;padding:13px 16px;font-size:15px;border:1px solid rgba(255,255,255,0.08);border-radius:11px;background:rgba(255,255,255,0.04);color:#fff;outline:none;margin-bottom:14px;transition:all 0.2s ease;font-family:inherit}
 .add-field:focus{border-color:rgba(229,9,20,0.5);background:rgba(255,255,255,0.06)}
+.add-field.ai-field:focus{border-color:rgba(139,92,246,0.5)}
 .add-field::placeholder{color:#555}
 
 .field-label{font-size:12px;color:#7a7a84;margin-bottom:8px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase}
@@ -104,9 +98,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
 .library-select{display:flex;gap:8px;margin-bottom:20px}
 .lib-btn{flex:1;padding:12px;border:1px solid rgba(255,255,255,0.08);border-radius:10px;background:rgba(255,255,255,0.04);color:#8a8a94;font-size:14px;font-weight:600;cursor:pointer;text-align:center;transition:all 0.15s ease}
 .lib-btn.selected{border-color:#e50914;color:#fff;background:linear-gradient(135deg,rgba(229,9,20,0.25),rgba(178,7,16,0.15));box-shadow:0 2px 8px rgba(229,9,20,0.2)}
+.lib-btn.ai-selected{border-color:#8b5cf6;color:#fff;background:linear-gradient(135deg,rgba(139,92,246,0.25),rgba(109,40,217,0.15));box-shadow:0 2px 8px rgba(139,92,246,0.2)}
 .add-submit{width:100%;padding:15px;background:linear-gradient(135deg,#e50914,#b20710);color:#fff;font-size:16px;font-weight:700;border:none;border-radius:12px;cursor:pointer;letter-spacing:0.01em;box-shadow:0 4px 14px rgba(229,9,20,0.35);transition:all 0.15s ease}
 .add-submit:active{transform:scale(0.98)}
 .add-submit:disabled{background:rgba(255,255,255,0.06);color:#555;box-shadow:none;cursor:not-allowed}
+.add-submit.ai-submit{background:linear-gradient(135deg,#8b5cf6,#6d28d9);box-shadow:0 4px 14px rgba(139,92,246,0.4)}
+.add-submit.ai-submit:disabled{background:rgba(255,255,255,0.06);box-shadow:none}
 .add-result{margin-top:14px;padding:13px;border-radius:10px;font-size:14px;text-align:center;display:none;font-weight:500}
 .add-result.success{background:rgba(76,175,80,0.15);color:#6fde73;border:1px solid rgba(76,175,80,0.3);display:block}
 .add-result.error{background:rgba(244,67,54,0.15);color:#ff6b5e;border:1px solid rgba(244,67,54,0.3);display:block}
@@ -117,8 +114,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
 .sri-title{font-size:14px;color:#fff;font-weight:600;margin-bottom:2px}
 .sri-year{font-size:12px;color:#7a7a84}
 .sri-type{font-size:10px;color:#4a9dff;font-weight:700;margin-top:2px;letter-spacing:0.05em}
-</style>
 
+.ai-hero{background:linear-gradient(135deg,rgba(139,92,246,0.12),rgba(109,40,217,0.06));border:1px solid rgba(139,92,246,0.2);border-radius:14px;padding:14px 16px;margin-bottom:18px}
+.ai-hero-title{font-size:14px;font-weight:700;color:#c4b5fd;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.ai-hero-sub{font-size:12.5px;color:#8a8a94;line-height:1.5}
+.ai-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+.ai-chip{background:rgba(139,92,246,0.1);color:#c4b5fd;font-size:12px;padding:7px 12px;border-radius:16px;border:1px solid rgba(139,92,246,0.25);cursor:pointer;font-weight:500;transition:all 0.15s ease}
+.ai-chip:active{background:rgba(139,92,246,0.25);transform:scale(0.96)}
+.ai-thinking{text-align:center;padding:40px 16px;color:#8a8a94;font-size:14px;display:flex;flex-direction:column;align-items:center;gap:14px}
+.ai-spinner{width:28px;height:28px;border:2.5px solid rgba(139,92,246,0.2);border-top-color:#a78bfa;border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ai-results-header{font-size:12px;color:#7a7a84;margin-bottom:12px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase}
+.ai-card{background:rgba(255,255,255,0.04);border-radius:12px;padding:12px;margin-bottom:10px;cursor:pointer;display:flex;gap:13px;align-items:stretch;border:1px solid rgba(255,255,255,0.06);transition:all 0.15s ease}
+.ai-card:active{background:rgba(139,92,246,0.08);border-color:rgba(139,92,246,0.25);transform:scale(0.99)}
+.ai-card img{width:56px;height:84px;object-fit:cover;border-radius:7px;flex-shrink:0;background:#16161d;box-shadow:0 2px 8px rgba(0,0,0,0.4)}
+.ai-poster-ph{width:56px;height:84px;background:linear-gradient(135deg,#1e1e28,#14141a);border-radius:7px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#4a4a54;font-weight:800;text-align:center}
+.ai-card-body{flex:1;display:flex;flex-direction:column;justify-content:space-between;min-width:0}
+.ai-card-top{min-width:0}
+.ai-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:5px;line-height:1.25;letter-spacing:-0.01em}
+.ai-reason{font-size:12.5px;color:#9a9aa4;line-height:1.5}
+.ai-lib{font-size:9.5px;color:#c4b5fd;font-weight:800;margin-top:6px;letter-spacing:0.1em;text-transform:uppercase}
+.ai-lib.dvd{color:#ff6b7a}
+.ai-error{background:rgba(244,67,54,0.1);border:1px solid rgba(244,67,54,0.3);color:#ff8579;padding:14px;border-radius:10px;font-size:13.5px;text-align:center;line-height:1.5}
+</style>
 </head>
 <body>
 <div class="header">
@@ -127,6 +145,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
     <div class="tab active" onclick="switchTab('dvd')">DVD</div>
     <div class="tab" onclick="switchTab('digital')">Digital</div>
     <div class="tab" onclick="switchTab('add')">+ Add</div>
+    <div class="tab ai-tab" onclick="switchTab('ai')">✨ Ask AI</div>
   </div>
 </div>
 <div class="search-wrap" id="search-wrap">
@@ -137,6 +156,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
   <button class="home-btn" onclick="clearSearch()" aria-label="Clear">⌂</button>
 </div>
 <div id="stats"></div>
+<div id="enrich-status"></div>
 <div id="tab-dvd" class="tab-content active"><div id="list-dvd"></div></div>
 <div id="tab-digital" class="tab-content"><div id="list-digital"></div></div>
 <div id="tab-add" class="tab-content">
@@ -157,6 +177,27 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
     </div>
     <button class="add-submit" id="add-btn" onclick="addTitle()" disabled>Select a title above</button>
     <div class="add-result" id="add-result"></div>
+  </div>
+</div>
+<div id="tab-ai" class="tab-content">
+  <div class="add-wrap">
+    <h2>✨ Ask AI</h2>
+    <div class="add-sub">Describe what you're in the mood for and AI will pick from your collection.</div>
+    <div class="ai-hero">
+      <div class="ai-hero-title">💡 How it works</div>
+      <div class="ai-hero-sub">AI searches only titles you already own — using genre and plot data to match your vibe. No outside recommendations.</div>
+    </div>
+    <textarea class="add-field ai-field" id="ai-prompt" style="height:90px;resize:none;line-height:1.5" placeholder="e.g. a mindless comedy for tired brains, or something with explosions and heart..."></textarea>
+    <div class="field-label">Need ideas?</div>
+    <div class="ai-chips" id="ai-chips"></div>
+    <div class="field-label">Search in</div>
+    <div class="library-select">
+      <div class="lib-btn ai-selected" id="ai-lib-all" onclick="selectAiLib('all')">All</div>
+      <div class="lib-btn" id="ai-lib-dvd" onclick="selectAiLib('dvd')">DVD Only</div>
+      <div class="lib-btn" id="ai-lib-digital" onclick="selectAiLib('digital')">Digital Only</div>
+    </div>
+    <button class="add-submit ai-submit" id="ai-btn" onclick="askAI()">✨ Get Recommendations</button>
+    <div id="ai-result" style="margin-top:18px"></div>
   </div>
 </div>
 <div class="modal-overlay" id="modal">
@@ -191,6 +232,10 @@ const app = initializeApp(FB);
 const db = getFirestore(app);
 const TMDB = "8670d5dc76f371b2ad77f98e626dfba2";
 const IMG = "https://image.tmdb.org/t/p/";
+
+// OpenRouter AI config
+const OPENROUTER_KEY = "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";
+const OPENROUTER_MODEL = "meta-llama/llama-3.3-70b-instruct:free";
 
 const DVD_BASE = [
   {title:"21",type:"movie"},{title:"21 and Over",type:"movie"},{title:"22 Jump Street",type:"movie"},{title:"2012",type:"movie"},{title:"30 Minutes or Less",type:"movie"},{title:"50 First Dates",type:"movie"},
@@ -286,8 +331,22 @@ const DIG_BASE = [
   {title:"Supernatural",type:"tv"}
 ];
 
-let dvdData=[], digData=[], currentTab="dvd", currentModalItem=null, selectedLib="dvd", selectedAddMovie=null, addTimer=null, selectedType="movie";
+const PROMPT_SUGGESTIONS = [
+  "Mindless comedy for a tired night",
+  "Big action with explosions",
+  "Something scary but not too scary",
+  "Feel-good family movie",
+  "A heist or con artist movie",
+  "Sci-fi with big ideas",
+  "Classic 80s or 90s vibes",
+  "Something short and funny"
+];
+
+let dvdData=[], digData=[], currentTab="dvd", currentModalItem=null, selectedLib="dvd", selectedAddMovie=null, addTimer=null, selectedType="movie", aiLib="all";
 let fbDvdAdded=[], fbDvdDeleted=[], fbDigAdded=[], fbDigDeleted=[];
+let enrichmentCache={};
+let enrichmentLoaded=false;
+let enrichmentInProgress=false;
 
 function sortArr(arr){
   return arr.slice().sort((a,b)=>{
@@ -338,12 +397,20 @@ function rebuild(){
   else if(currentTab==="digital")document.getElementById("stats").textContent=digData.length+" titles";
   loadPosters(dvdData,"list-dvd");
   loadPosters(digData,"list-digital");
+  if(enrichmentLoaded && !enrichmentInProgress) enrichCollection();
 }
 
 onSnapshot(collection(db,"dvd_added"),snap=>{fbDvdAdded=snap.docs.map(d=>({...d.data(),_docId:d.id}));rebuild();});
 onSnapshot(collection(db,"dvd_deleted"),snap=>{fbDvdDeleted=snap.docs.map(d=>d.data().title);rebuild();});
 onSnapshot(collection(db,"digital_added"),snap=>{fbDigAdded=snap.docs.map(d=>({...d.data(),_docId:d.id}));rebuild();});
 onSnapshot(collection(db,"digital_deleted"),snap=>{fbDigDeleted=snap.docs.map(d=>d.data().title);rebuild();});
+
+onSnapshot(collection(db,"enrichment"),snap=>{
+  enrichmentCache={};
+  snap.docs.forEach(d=>{enrichmentCache[d.id]=d.data();});
+  enrichmentLoaded=true;
+  if(!enrichmentInProgress) enrichCollection();
+});
 
 function loadPosters(data,elId){
   let i=0;
@@ -369,14 +436,62 @@ function loadPosters(data,elId){
   next();
 }
 
+async function enrichCollection(){
+  if(enrichmentInProgress) return;
+  const all=[...dvdData,...digData];
+  const missing=all.filter(item=>!enrichmentCache[item.id]);
+  if(missing.length===0){
+    document.getElementById("enrich-status").style.display="none";
+    return;
+  }
+  enrichmentInProgress=true;
+  const status=document.getElementById("enrich-status");
+  status.style.display="block";
+  let done=0;
+  for(const item of missing){
+    status.textContent="✨ Enriching library for smarter AI... "+(done+1)+" / "+missing.length;
+    const q=item.title.replace(/^(The|A|An) /i,"").replace(/[^a-zA-Z0-9 ]/g,"").trim();
+    const ep=item.type==="tv"?"search/tv":"search/movie";
+    try{
+      const searchRes=await fetch("https://api.themoviedb.org/3/"+ep+"?api_key="+TMDB+"&query="+encodeURIComponent(q)+"&language=en-US&page=1");
+      const searchData=await searchRes.json();
+      if(searchData.results&&searchData.results.length>0){
+        const m=searchData.results[0];
+        const detailEp=item.type==="tv"?"tv":"movie";
+        const detailRes=await fetch("https://api.themoviedb.org/3/"+detailEp+"/"+m.id+"?api_key="+TMDB);
+        const detailData=await detailRes.json();
+        const dk=item.type==="tv"?"first_air_date":"release_date";
+        const payload={
+          genres:(detailData.genres||[]).map(g=>g.name),
+          overview:(m.overview||"").slice(0,300),
+          year:m[dk]?m[dk].substring(0,4):"",
+          type:item.type
+        };
+        await setDoc(doc(db,"enrichment",item.id),payload);
+        enrichmentCache[item.id]=payload;
+      } else {
+        const payload={genres:[],overview:"",year:"",type:item.type};
+        await setDoc(doc(db,"enrichment",item.id),payload);
+        enrichmentCache[item.id]=payload;
+      }
+    } catch(e){
+      console.error("Enrichment failed for",item.title,e);
+    }
+    done++;
+    await new Promise(r=>setTimeout(r,120));
+  }
+  status.style.display="none";
+  enrichmentInProgress=false;
+}
+
 window.switchTab=function(tab){
   currentTab=tab;
   document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
   document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));
-  const tabs=["dvd","digital","add"];
+  const tabs=["dvd","digital","add","ai"];
   document.querySelectorAll(".tab")[tabs.indexOf(tab)].classList.add("active");
   document.getElementById("tab-"+tab).classList.add("active");
-  const hide=tab==="add";
+  const hide=tab==="add"||tab==="ai";
   document.getElementById("search-wrap").style.display=hide?"none":"flex";
   document.getElementById("stats").style.display=hide?"none":"block";
   if(!hide){document.getElementById("search").value="";const data=tab==="dvd"?dvdData:digData;document.getElementById("stats").textContent=data.length+" titles";}
@@ -523,6 +638,126 @@ window.addTitle=function(){
     document.getElementById("add-btn").disabled=false;
     document.getElementById("add-btn").textContent="Add to "+(selectedLib==="dvd"?"DVD Collection":"Digital");
   });
+};
+
+function renderChips(){
+  const el=document.getElementById("ai-chips");
+  el.innerHTML=PROMPT_SUGGESTIONS.map(s=>'<div class="ai-chip" onclick="useChip(this)">'+s+'</div>').join("");
+}
+window.useChip=function(el){
+  document.getElementById("ai-prompt").value=el.textContent;
+};
+renderChips();
+
+window.selectAiLib=function(lib){
+  aiLib=lib;
+  ["all","dvd","digital"].forEach(l=>{
+    document.getElementById("ai-lib-"+l).className="lib-btn"+(l===lib?" ai-selected":"");
+  });
+};
+
+window.askAI=async function(){
+  const prompt=document.getElementById("ai-prompt").value.trim();
+  if(!prompt){
+    document.getElementById("ai-result").innerHTML='<div class="ai-error">Describe what you\'re in the mood for first!</div>';
+    return;
+  }
+  const btn=document.getElementById("ai-btn");
+  btn.disabled=true;btn.textContent="✨ Thinking...";
+  document.getElementById("ai-result").innerHTML='<div class="ai-thinking"><div class="ai-spinner"></div><div>Scanning your collection for the perfect match...</div></div>';
+
+  const pool=aiLib==="dvd"?dvdData:aiLib==="digital"?digData:[...dvdData,...digData];
+
+  // Safeguard: lookup of valid titles for post-validation
+  const titleLookup={};
+  pool.forEach(item=>{titleLookup[item.title.toLowerCase()]=item;});
+
+  const contextLines=pool.map(item=>{
+    const enriched=enrichmentCache[item.id]||{};
+    const genres=(enriched.genres||[]).join("/")||"Unknown";
+    const overview=(enriched.overview||"").slice(0,130).replace(/\s+/g," ");
+    return item.title+" ["+item.tab.toUpperCase()+"] ("+genres+") — "+overview;
+  }).join("\n");
+
+  const systemMsg="You are a thoughtful movie recommendation assistant for a family's personal home collection. You MUST ONLY recommend titles from the exact list provided by the user. Do NOT suggest any movie or show not in the list, even if it would be a better match. Use the genre tags and plot overviews to match the mood, not just keywords in titles. Return valid JSON only — no markdown fences, no extra text.";
+
+  const userMsg="User's mood: \""+prompt+"\"\n\nMy collection (the ONLY titles you may recommend):\n"+contextLines+"\n\nPick up to 5 titles that best match the mood. Return fewer if only a few truly fit — quality over quantity. Respond with exactly this JSON structure:\n{\"suggestions\":[{\"title\":\"exact title copied from the list above\",\"library\":\"dvd or digital\",\"reason\":\"one concise sentence explaining the match\"}]}";
+
+  try{
+    const res=await fetch("https://openrouter.ai/api/v1/chat/completions",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":"Bearer "+OPENROUTER_KEY,
+        "HTTP-Referer":window.location.origin||"https://movies.app",
+        "X-Title":"Family Movie Time"
+      },
+      body:JSON.stringify({
+        model:OPENROUTER_MODEL,
+        messages:[
+          {role:"system",content:systemMsg},
+          {role:"user",content:userMsg}
+        ],
+        temperature:0.7,
+        max_tokens:800
+      })
+    });
+    if(!res.ok){
+      const errText=await res.text();
+      console.error("OpenRouter error:",res.status,errText);
+      throw new Error("AI service returned "+res.status);
+    }
+    const data=await res.json();
+    const text=data.choices?.[0]?.message?.content||"";
+    const cleaned=text.replace(/```json|```/g,"").trim();
+    const jsonMatch=cleaned.match(/\{[\s\S]*\}/);
+    if(!jsonMatch) throw new Error("No JSON in response");
+    const parsed=JSON.parse(jsonMatch[0]);
+    const rawSuggestions=parsed.suggestions||[];
+
+    // Safeguard: validate every suggestion against the real collection
+    const validated=[];
+    rawSuggestions.forEach(s=>{
+      if(!s.title) return;
+      const match=titleLookup[s.title.toLowerCase().trim()];
+      if(match){
+        validated.push({
+          title:match.title,
+          reason:s.reason||"Matches your mood.",
+          foundItem:match
+        });
+      } else {
+        console.warn("AI suggested title not in collection, dropped:",s.title);
+      }
+    });
+
+    if(!validated.length){
+      document.getElementById("ai-result").innerHTML='<div class="ai-error">No good matches found. Try describing it differently — maybe mention a genre or vibe!</div>';
+    } else {
+      let html='<div class="ai-results-header">'+validated.length+' pick'+(validated.length>1?"s":"")+' from your collection</div>';
+      validated.forEach(s=>{
+        const item=s.foundItem;
+        const poster=item.poster?'<img src="'+item.poster+'" alt=""/>'
+          :'<div class="ai-poster-ph">'+s.title.substring(0,3).toUpperCase()+'</div>';
+        const libClass=item.tab==="dvd"?"dvd":"";
+        html+='<div class="ai-card" data-tab="'+item.tab+'" data-id="'+item.id+'" onclick="showDetail(this.dataset.tab,this.dataset.id)">'
+          +poster
+          +'<div class="ai-card-body">'
+          +'<div class="ai-card-top">'
+          +'<div class="ai-title">'+s.title+'</div>'
+          +'<div class="ai-reason">'+s.reason+'</div>'
+          +'</div>'
+          +'<div class="ai-lib '+libClass+'">'+(item.tab==="dvd"?"📀 DVD":"💾 Digital")+'</div>'
+          +'</div>'
+          +'</div>';
+      });
+      document.getElementById("ai-result").innerHTML=html;
+    }
+  }catch(e){
+    console.error("AI error:",e);
+    document.getElementById("ai-result").innerHTML='<div class="ai-error">Something went wrong: '+e.message+'<br><br>Check that your OpenRouter key is valid and has credits.</div>';
+  }
+  btn.disabled=false;btn.textContent="✨ Get Recommendations";
 };
 
 document.getElementById("modal").addEventListener("click",function(e){if(e.target===this)closeModal();});
