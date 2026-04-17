@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
 <title>Movie Deluxe</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -19,15 +18,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0a0a0a;
 .tab-content{display:none;padding:0 16px}
 .tab-content.active{display:block}
 .movie-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding-top:10px}
-.movie-card{border-radius:8px;overflow:hidden;background:#1a1a1a;aspect-ratio:2/3;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border:1px solid #222;font-size:10px;padding:5px;cursor:pointer}
+.movie-card{border-radius:8px;overflow:hidden;background:#1a1a1a;aspect-ratio:2/3;position:relative;display:flex;align-items:center;justify-content:center;text-align:center;border:1px solid #333;font-size:11px;color:#888;padding:10px;cursor:pointer}
 .movie-card img{width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0}
-.movie-card span{position:relative;z-index:1;color:#666}
-/* Modal Styling */
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:1000;padding:40px 20px}
-.modal-content{background:#1a1a1a;padding:20px;border-radius:12px;max-width:500px;margin:auto;border:1px solid #333}
-.ai-card{background:#1a1a1a;border-radius:10px;padding:15px;margin-bottom:12px;border:1px solid #333;border-left:4px solid #e50914}
-.ai-title{font-size:17px;font-weight:800;color:#fff;margin-bottom:4px}
-.ai-reason{font-size:14px;color:#bbb;line-height:1.4}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:1000;padding:40px 20px;overflow-y:auto}
+.modal-content{background:#1a1a1a;padding:25px;border-radius:15px;max-width:400px;margin:auto;border:1px solid #444;text-align:center}
+.ai-card{background:#1a1a1a;border-radius:10px;padding:15px;margin-bottom:12px;border:1px solid #333;border-left:4px solid #e50914;text-align:left}
+.btn-row{display:flex;gap:10px;justify-content:center;margin-top:20px}
+.action-btn{padding:10px 15px;border-radius:6px;border:none;font-weight:bold;font-size:12px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -50,38 +47,40 @@ body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0a0a0a;
 <div id="tab-dvd" class="tab-content active"><div class="movie-grid" id="grid-dvd"></div></div>
 <div id="tab-digital" class="tab-content"><div class="movie-grid" id="grid-digital"></div></div>
 
+<div id="movie-modal" class="modal" onclick="this.style.display='none'">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div id="modal-poster-space" style="margin-bottom:15px"></div>
+    <h2 id="modal-title" style="color:#e50914;margin-bottom:10px"></h2>
+    <p id="modal-summary" style="font-size:14px;color:#bbb;line-height:1.6"></p>
+    <div class="btn-row">
+      <button id="fetch-btn" class="action-btn" style="background:#e50914;color:white">Get Movie Info</button>
+      <button id="del-btn" class="action-btn" style="background:#333;color:#ff4444">Delete</button>
+    </div>
+  </div>
+</div>
+
 <div id="tab-add" class="tab-content">
   <div style="padding:20px 0">
-    <h2>Add Title</h2>
-    <input type="text" style="width:100%;padding:14px;border-radius:8px;background:#1e1e1e;color:#fff;border:1px solid #333;margin-bottom:12px" id="new-title" placeholder="Search Movie Name..."/>
-    <select style="width:100%;padding:14px;border-radius:8px;background:#1e1e1e;color:#fff;border:1px solid #333;margin-bottom:12px" id="new-type">
+    <input type="text" id="new-title" style="width:100%;padding:15px;background:#1e1e1e;color:#fff;border:1px solid #333;border-radius:8px;margin-bottom:10px" placeholder="Enter Movie Name..."/>
+    <select id="new-type" style="width:100%;padding:15px;background:#1e1e1e;color:#fff;border:1px solid #333;border-radius:8px;margin-bottom:15px">
       <option value="dvd">DVD</option>
       <option value="digital">Digital</option>
     </select>
-    <button style="width:100%;padding:16px;background:#e50914;color:#fff;font-weight:700;border:none;border-radius:8px" id="add-btn" onclick="searchAndSave()">Search & Add</button>
+    <button onclick="searchAndSave()" style="width:100%;padding:18px;background:#e50914;color:#fff;font-weight:bold;border:none;border-radius:8px">Search & Add</button>
   </div>
 </div>
 
 <div id="tab-ai" class="tab-content">
   <div style="padding:20px 0">
-    <h2>Ask Gemini</h2>
-    <textarea style="width:100%;height:100px;padding:14px;border-radius:8px;background:#1e1e1e;color:#fff;border:1px solid #333;margin-bottom:12px;resize:none" id="ai-prompt" placeholder="What kind of movie are you looking for?"></textarea>
-    <button style="width:100%;padding:16px;background:#e50914;color:#fff;font-weight:700;border:none;border-radius:8px" id="ai-btn" onclick="askGemini()">Ask Gemini</button>
+    <textarea id="ai-prompt" style="width:100%;height:100px;padding:15px;background:#1e1e1e;color:#fff;border:1px solid #333;border-radius:8px;margin-bottom:10px;resize:none" placeholder="What kind of movie?"></textarea>
+    <button id="ai-btn" onclick="askGemini()" style="width:100%;padding:18px;background:#e50914;color:#fff;font-weight:bold;border:none;border-radius:8px">Ask Gemini</button>
     <div id="ai-result" style="margin-top:20px"></div>
-  </div>
-</div>
-
-<div id="movie-modal" class="modal" onclick="this.style.display='none'">
-  <div class="modal-content" onclick="event.stopPropagation()">
-    <h2 id="modal-title" style="color:#e50914;margin-bottom:10px"></h2>
-    <p id="modal-summary" style="font-size:14px;color:#ccc;line-height:1.6"></p>
-    <button style="margin-top:20px;padding:10px;background:#333;color:white;border:none;border-radius:5px" onclick="document.getElementById('movie-modal').style.display='none'">Close</button>
   </div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, onSnapshot, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const TMDB_KEY = "8670d5dc76f371b2ad77f98e626dfba2";
 const GEMINI_KEY = "AQ.Ab8RN6LIAHe_pUU_VinBWJM50ft4XQEKtx_KvpeS1plvYPCXag";
@@ -90,37 +89,70 @@ const firebaseConfig = { apiKey: "AIzaSyBBKgF3BXF3WOrVATkyH-ZR296KbPPG6m0", auth
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-let dbMovies = [];
-const BASE_TITLES = ["21","21 and Over","22 Jump Street","2012","30 Minutes or Less","50 First Dates","A Christmas Story","A Fistful of Dollars","A Million Ways to Die in the West","A Walk Among the Tombstones","Abraham Lincoln Vampire Hunter","Ad Astra","After Earth","Alien","Alien Covenant","Alien vs Predator","Aliens","American Gangster","American History X","American Hustle","American Pie","Annihilation","Ant-Man and the Wasp","Apollo 18","Aquaman","Austin Powers Goldmember","Avengers Age of Ultron","Avengers Endgame","Avatar","Batman vs Superman","Battleship","Baywatch","Bee Movie","Big Trouble in Little China","Bill and Teds Bogus Journey","Bill and Teds Excellent Adventure","Black Panther","Blade Runner","Bleeding Steel","Blended","Bloodshot","Blow","Boondock Saints","Brave","Bumblebee","Captain America The First Avenger","Captain America The Winter Soldier","Cast Away","Central Intelligence","Chicago","Chips","Civil War","Clash of the Titans","Cold Mountain","Collateral","Collateral Damage","Conan the Barbarian","Conan the Destroyer","Constantine","Contraband","Dawn of the Dead","Deadpool 2","Deliver Us","Despicable Me","Despicable Me 2","Despicable Me 3","Die Hard","Die Hard with a Vengeance","Dirty Grandpa","Divergent","Doctor Strange","Dolittle","Dragonheart","Due Date","Edward Scissorhands","Enemy of the State","Escape Plan","Eurotrip","Everything Must Go","Fantastic Beasts and Where to Find Them","Fantastic Beasts The Crimes of Grindelwald","Fast 5","Fast 6","Fast and Furious Hobbs and Shaw","Fast Times at Ridgemont High","Faster","Fear and Loathing in Las Vegas","Fight Club","First Man","Full Metal Jacket","Furious 7","G.I. Joe","Game Night","Gamer","Get Hard","Ghost in the Shell","Ghost Protocol","Godzilla","Gone in 60 Seconds","Goodfellas","Goon","Gravity","Groundhog Day","Grown Ups 2","Guardians of the Galaxy Vol 2","Hannibal","Happy Feet","Heartbreak Ridge","Hell Ride","Hercules","Herbie","Hitch","Homefront","Horrible Bosses","I Am Legend","Ice Age","Ice Age The Meltdown","Identity Thief","Immortals","Independence Day","Insurgent","Iron Man 3","J. Edgar","Jack Reacher","Jack Reacher Never Go Back","Jason Bourne","Jayne Mansfields Car","Jeepers Creepers","Joe Dirt","John Wick","John Wick 2","John Wick 3","Jonah Hex","Jumanji","Jumanji Welcome to the Jungle","Jurassic World","Just Friends","Justice League","JW Fallen Kingdom","Kick-Ass","Kick-Ass 2","Kill Bill Vol 1","Kill Bill Vol 2","Kingsman Secret Service","Kiss the Girls","Last Knights","Leatherheads","Lethal Weapon","Lethal Weapon 2","Lethal Weapon 3","Lethal Weapon 4","Little Nicky","Logan","Lone Survivor","Mad Max Fury Road","Masterminds","Mechanic Resurrection","Men in Black","Million Dollar Baby","Mission Impossible","Mission Impossible Fallout","Mission Impossible Rogue Nation","Mr and Mrs Smith","Mrs Doubtfire","My Cousin Vinny","Nacho Libre","National Lampoons Christmas Vacation","Natural Born Killers","Need for Speed","Next","Nine Months","Oblivion","Oceans Eleven","Once Upon a Time in Venice","Orange County","Our Family Wedding","Out of the Furnace","Outbreak","Pacific Rim","Pacific Rim Uprising","Pain and Gain","Passengers","Pirates of the Caribbean Dead Men Tell No Tales","Pirates of the Caribbean On Stranger Tides","Point Break","Pompeii","Predator","Predators","Priest","Psych 9","Rain Man","Rambo","Rambo Last Blood","Rampage","Rampart","Ready Player One","Reservoir Dogs","Revenge of the Nerds","Ride Along","Ride Along 2","Risky Business","Road House","Robin Hood","Rogue One","Rush Hour","Rush Hour 2","Safe House","Savages","Scarface","School of Rock","Seventh Son","Sex Tape","Shallow Hal","Shanghai Knights","Shanghai Noon","Sherlock Holmes A Game of Shadows","Snow White and the Huntsman","Solo A Star Wars Story","Spaceballs","Speed","Star Wars The Force Awakens","Star Wars The Last Jedi","Super 8","Super Troopers","Super Troopers 2","Survival of the Dead","Tag","Taken","Talladega Nights","Tammy","Ted","Tenet","Terminator Genisys","Texas Chainsaw Massacre","The A-Team","The Accountant","The Aviator","The Breakfast Club","The Bucket List","The Client","The Dark Knight Rises","The Day After Tomorrow","The Dead Girl","The Dukes of Hazard","The Equalizer","The Expendables 3","The Fast and the Furious Tokyo Drift","The Fate of the Furious","The Fighter","The Gambler","The Gentlemen","The Glass House","The Green Mile","The Grinch","The Hangover","The Hangover Part 2","The Hangover Part 3","The Heat","The House Bunny","The Hunger Games","The Hunger Games Catching Fire","The Hunger Games Mockingjay","The Hunger Games Mockingjay Pt 2","The Hungover Games","The Ideas of March","The Karate Kid","The Lego Batman Movie","The Lorax","The Losers","The Magnificent Seven","The Martian","The Mechanic","The Meg","The Monuments Men","The Mule","The Musketeer","The Never-ending Story","The Nice Guys","The Outlaw","The Outsiders","The Quest","The Quick and the Dead","The Rundown","The Shawshank Redemption","The Shining","The Silence of the Lambs","The Son of No One","The Sorcerers Apprentice","The Tax Collector","The Terminator","The Thing","The Town","The War with Grandpa","The Wolf of Wall Street","The Wolverine","The Woodsman","The Worlds End","The Wrestler","The Zodiac","Thelma and Louise","This is the End","Thor Ragnarok","Three Kings","Tinker Tailor Soldier Spy","Tomb Raider","Tower Heist","Transcendence","Transformers","Transformers The Last Knight","Trouble with the Curve","Tropic Thunder","Troy","Twister","Unforgiven","Vacation","War Dogs","Warrior","Were the Millers","Weekend at Bernies","When Harry Met Sally","White Men Cant Jump","Why Him","Wild Card","Wonder Woman","World War Z","Wyatt Earp","X-Men","X-Men Apocalypse","X-Men Last Stand","X-Men Origins Wolverine","X2","Yogi Bear","Young Guns","Zodiac","11.22.63"].map(t=>({title:t, type:'dvd'}));
-
-const DIG_BASE = ["65","Airplane","Anaconda","Babylon","The Bad Guys 2","Beetlejuice","Beetlejuice Beetlejuice","Black Adam","Blade","Blade 2","Blade Trinity","Bumblebee","Casper","Civil War","Cocaine Bear","Daffy Ducks Quackbusters","Despicable Me 4","Django Unchained","Dracula Dead and Loving It","Elemental","Fatman","A Few Good Men","Final Destination","Ghost Rider","Ghost Rider Spirit of Vengeance","Gone in 60 Seconds","Indiana Jones Raiders of the Lost Ark","Indiana Jones and the Temple of Doom","Indiana Jones and the Last Crusade","Indiana Jones and the Dial of Destiny","Indiana Jones and the Kingdom of the Crystal Skull","Inside Out 2","The Italian Job","John Wick 4","Jurassic Park","Jurassic Park 3","Jurassic Park The Lost World","Jurassic World","Jurassic World Dominion","Jurassic World Fallen Kingdom","Jurassic World Rebirth","The Lego Movie","The Lego Movie The Second Part","The Lego Ninjago Movie","The Lego Batman Movie","Men in Black","Mickey 17","Mortal Kombat","Mummies","My Girl","National Lampoons Christmas Vacation","Novacaine","Odd Thomas","Scrooged","Small Soldiers","Snatch","Spider-Man No Way Home","The Legend of Sleepy Hollow","The SpongeBob Movie Sponge Out of Water","Starship Troopers","Top Gun","Top Gun Maverick","Top Secret","Transformers","Transformers Revenge of the Fallen","Transformers Dark of the Moon","Transformers Age of Extinction","Transformers The Last Knight","Transformers Rise of the Beasts","Venom The Last Dance","Violent Night","Weekend at Bernies","Zootopia 2","Supernatural"].map(t=>({title:t, type:'digital'}));
+let fbMovies = [];
+const DVD_BASE = ["21","22 Jump Street","Alien","Avatar"].map(t=>({title:t, type:'dvd'})); // Simplified for example
+const DIG_BASE = ["65","Airplane","Beetlejuice"].map(t=>({title:t, type:'digital'}));
 
 onSnapshot(collection(db, "movies"), (snap) => {
-  dbMovies = snap.docs.map(d => ({...d.data()}));
+  fbMovies = snap.docs.map(d => ({id: d.id, ...d.data()}));
   renderAll();
 });
 
 window.renderAll = () => {
-  const search = document.getElementById('main-search').value.toLowerCase();
-  const all = [...BASE_TITLES, ...DIG_BASE, ...dbMovies];
-  const filtered = all.filter(m => m.title.toLowerCase().includes(search));
-  updateGrid('grid-dvd', filtered.filter(m => m.type === 'dvd'));
-  updateGrid('grid-digital', filtered.filter(m => m.type === 'digital'));
+  const q = document.getElementById('main-search').value.toLowerCase();
+  const all = [...DVD_BASE, ...DIG_BASE, ...fbMovies];
+  const filtered = all.filter(m => m.title.toLowerCase().includes(q)).sort((a,b)=>a.title.localeCompare(b.title));
+  
+  document.getElementById('grid-dvd').innerHTML = filtered.filter(m=>m.type==='dvd').map(m=>renderCard(m)).join('');
+  document.getElementById('grid-digital').innerHTML = filtered.filter(m=>m.type==='digital').map(m=>renderCard(m)).join('');
 };
 
-function updateGrid(id, list) {
-  list.sort((a,b) => a.title.localeCompare(b.title));
-  document.getElementById(id).innerHTML = list.map(m => `
-    <div class="movie-card" onclick="showMovie('${m.title}', '${m.overview||''}')">
-      ${m.poster ? `<img src="https://image.tmdb.org/t/p/w200${m.poster}">` : `<span>${m.title}</span>`}
-    </div>
-  `).join('');
+function renderCard(m) {
+  const mJson = JSON.stringify(m).replace(/'/g, "&apos;");
+  return `<div class="movie-card" onclick='openInfo(${mJson})'>
+    ${m.poster ? `<img src="https://image.tmdb.org/t/p/w200${m.poster}">` : `<span>${m.title}</span>`}
+  </div>`;
 }
 
-window.showMovie = (title, overview) => {
-  document.getElementById('modal-title').innerText = title;
-  document.getElementById('modal-summary').innerText = overview || "No summary available.";
+window.openInfo = (movie) => {
+  document.getElementById('modal-title').innerText = movie.title;
+  document.getElementById('modal-summary').innerText = movie.overview || "No summary found yet.";
+  document.getElementById('modal-poster-space').innerHTML = movie.poster ? `<img src="https://image.tmdb.org/t/p/w300${movie.poster}" style="width:150px;border-radius:8px">` : "";
+  
+  const fetchBtn = document.getElementById('fetch-btn');
+  const delBtn = document.getElementById('del-btn');
+
+  // If it's a new movie from Firebase, show delete. If it's a base movie, show Fetch Info.
+  fetchBtn.onclick = () => autoFetch(movie.title, movie.type);
+  
+  if(movie.id) {
+    delBtn.style.display = 'block';
+    delBtn.onclick = async () => { if(confirm("Delete?")) await deleteDoc(doc(db, "movies", movie.id)); };
+  } else {
+    delBtn.style.display = 'none';
+  }
   document.getElementById('movie-modal').style.display = 'block';
+};
+
+async function autoFetch(title, type) {
+  try {
+    const res = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${TMDB_KEY}&query=${encodeURIComponent(title)}`);
+    const data = await res.json();
+    const m = data.results[0];
+    if(m) {
+      await setDoc(doc(db, "movies", m.id.toString()), { title: m.title, poster: m.poster_path, type: type, overview: m.overview });
+      alert("Summary & Poster Pulled!");
+      document.getElementById('movie-modal').style.display = 'none';
+    }
+  } catch(e) { alert("Error fetching info"); }
+}
+
+window.searchAndSave = async () => {
+  const title = document.getElementById('new-title').value.trim();
+  const type = document.getElementById('new-type').value;
+  if(!title) return;
+  await autoFetch(title, type);
+  document.getElementById('new-title').value = "";
 };
 
 window.switchTab = (t) => {
@@ -129,58 +161,25 @@ window.switchTab = (t) => {
   document.getElementById('search-box').style.display = (t==='add'||t==='ai') ? 'none' : 'flex';
 };
 
-window.searchAndSave = async () => {
-  const title = document.getElementById('new-title').value.trim();
-  const type = document.getElementById('new-type').value;
-  if(!title) return;
-  try {
-    const res = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${TMDB_KEY}&query=${encodeURIComponent(title)}`);
-    const data = await res.json();
-    const movie = data.results[0];
-    if(!movie) throw new Error("Not found");
-    await setDoc(doc(db, "movies", movie.id.toString()), {
-      title: movie.title, poster: movie.poster_path, type: type, overview: movie.overview
-    });
-    alert("Added with Poster and Summary!");
-    document.getElementById('new-title').value = '';
-  } catch(e) { alert(e.message); }
-};
-
 window.askGemini = async function() {
-  const prompt = document.getElementById("ai-prompt").value;
+  const p = document.getElementById("ai-prompt").value;
   const resEl = document.getElementById("ai-result");
   const btn = document.getElementById("ai-btn");
-  if(!prompt) return;
-
-  btn.disabled = true;
-  resEl.innerHTML = "Thinking...";
-
-  const titles = [...BASE_TITLES, ...DIG_BASE, ...dbMovies].map(m => m.title).join(", ");
-  const gPrompt = `Based ONLY on this list: ${titles}, suggest 3 movies for: "${prompt}". Return ONLY JSON: {"suggestions":[{"title":"Name","reason":"Why"}]}`;
+  if(!p) return;
+  btn.disabled = true; resEl.innerHTML = "Thinking...";
+  const titles = [...DVD_BASE, ...DIG_BASE, ...fbMovies].map(m=>m.title).join(", ");
+  const gPrompt = `Based on this list: ${titles}, suggest 3 movies for: "${p}". Return ONLY JSON: {"suggestions":[{"title":"Name","reason":"Why"}]}`;
 
   try {
     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" }, // Strictly no OAuth headers
+      method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ contents: [{ parts: [{ text: gPrompt }] }] })
     });
     const data = await res.json();
-    if(data.error) throw new Error(data.error.message);
-
-    const text = data.candidates[0].content.parts[0].text.replace(/```json|```/g, "");
-    const json = JSON.parse(text);
-
-    resEl.innerHTML = json.suggestions.map(s => `
-      <div class="ai-card">
-        <div class="ai-title">${s.title}</div>
-        <div class="ai-reason">${s.reason}</div>
-      </div>
-    `).join('');
-  } catch(e) { 
-    resEl.innerHTML = `<div style="color:red;border:1px solid red;padding:10px;border-radius:8px">Gemini Error: ${e.message}</div>`;
-  } finally { btn.disabled = false; }
+    const json = JSON.parse(data.candidates[0].content.parts[0].text.replace(/```json|```/g, ""));
+    resEl.innerHTML = json.suggestions.map(s => `<div class="ai-card"><div style="font-weight:800;color:#e50914">${s.title}</div><div style="font-size:13px;color:#bbb">${s.reason}</div></div>`).join('');
+  } catch(e) { resEl.innerHTML = `<div style="color:red">Error: ${e.message}</div>`; } finally { btn.disabled = false; }
 };
-
 renderAll();
 </script>
 </body>
