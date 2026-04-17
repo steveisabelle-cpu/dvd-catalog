@@ -4,8 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-title" content="Movie Deluxe"/>
-<title>Super Fun Awesome Family Movie Time Deluxe</title>
+<title>Movie Deluxe</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0a0a0a;color:#fff;min-height:100vh}
@@ -16,342 +15,84 @@ body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0a0a0a;
 .tab.active{color:#fff;border-bottom-color:#e50914}
 .search-wrap{padding:10px 16px 6px;background:#0a0a0a;position:sticky;top:107px;z-index:99;display:flex;gap:8px;align-items:center}
 .search-wrap input{flex:1;padding:10px 16px;font-size:15px;border:none;border-radius:8px;background:#1e1e1e;color:#fff;outline:none}
-.search-wrap input::placeholder{color:#555}
-.home-btn{flex-shrink:0;width:38px;height:38px;background:#1e1e1e;border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#888;font-size:18px}
-#stats{font-size:12px;color:#555;padding:2px 16px 6px}
-.section-header{font-size:11px;font-weight:700;color:#e50914;letter-spacing:0.15em;text-transform:uppercase;padding:14px 16px 6px;background:#0a0a0a}
-.movie-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:0 16px 4px}
-.movie-card{cursor:pointer;border-radius:6px;overflow:hidden;background:#1a1a1a;position:relative;aspect-ratio:2/3}
-.movie-card img{width:100%;height:100%;object-fit:cover;display:block}
-.placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#1a1a1a;padding:8px;text-align:center}
-.placeholder .abbr{font-size:20px;font-weight:800;color:#333;margin-bottom:4px}
-.placeholder .ptitle{font-size:8px;color:#444;line-height:1.3}
-.num-badge{position:absolute;top:4px;left:4px;background:rgba(0,0,0,0.8);color:#888;font-size:9px;font-weight:700;padding:2px 4px;border-radius:3px}
-.new-badge{position:absolute;top:4px;right:4px;background:#e50914;color:#fff;font-size:8px;font-weight:700;padding:2px 5px;border-radius:3px}
-.tv-card-badge{position:absolute;bottom:4px;left:4px;background:rgba(0,100,200,0.9);color:#fff;font-size:8px;font-weight:700;padding:2px 5px;border-radius:3px}
-.tab-content{display:none}
+.home-btn{width:38px;height:38px;background:#1e1e1e;border:none;border-radius:8px;color:#888;font-size:18px}
+.tab-content{display:none;padding:16px}
 .tab-content.active{display:block}
-.no-results{padding:60px 16px;text-align:center;color:#444;font-size:15px}
-.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.95);z-index:1000;overflow-y:auto;display:none}
-.modal-overlay.open{display:block}
-.modal{max-width:500px;margin:0 auto}
-.modal-backdrop-wrap{position:relative;width:100%;height:240px;overflow:hidden;background:#1a1a1a}
-.modal-backdrop-wrap img{width:100%;height:100%;object-fit:cover;display:block;opacity:0.7}
-.modal-close{position:fixed;top:14px;right:14px;width:32px;height:32px;background:rgba(0,0,0,0.8);border:1px solid #444;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff}
-.modal-body{padding:0 16px 50px}
-.modal-poster-row{display:flex;gap:14px;align-items:flex-start;margin-top:-50px;margin-bottom:14px}
-.modal-poster{width:85px;height:127px;border-radius:7px;overflow:hidden;flex-shrink:0;box-shadow:0 6px 24px rgba(0,0,0,0.7);background:#1a1a1a}
-.modal-poster img{width:100%;height:100%;object-fit:cover}
-.modal-info{padding-top:54px;flex:1}
-.modal-title{font-size:19px;font-weight:800;line-height:1.2;margin-bottom:4px}
-.modal-year{font-size:13px;color:#888;margin-bottom:6px}
-.modal-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:2px}
-.modal-score{display:inline-flex;align-items:center;gap:4px;background:#e50914;color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px}
-.modal-tv-tag{display:inline-flex;align-items:center;gap:4px;background:#0064c8;color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px}
-.modal-overview{font-size:14px;color:#bbb;line-height:1.7;margin-bottom:14px;margin-top:14px}
-.modal-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
-.modal-tag{background:#1e1e1e;color:#888;font-size:11px;padding:4px 10px;border-radius:20px}
-.delete-btn{width:100%;padding:13px;background:#1a1a1a;border:1px solid #e50914;color:#e50914;font-size:15px;font-weight:600;border-radius:8px}
-.add-wrap{padding:20px 16px}
-.add-wrap h2{font-size:18px;font-weight:700;margin-bottom:16px}
-.add-field{width:100%;padding:12px 16px;font-size:15px;border:none;border-radius:8px;background:#1e1e1e;color:#fff;outline:none;margin-bottom:12px}
-.type-select, .library-select, .ai-lib-select{display:flex;gap:8px;margin-bottom:12px}
-.type-btn, .lib-btn{flex:1;padding:9px;border:1px solid #333;border-radius:8px;background:#1a1a1a;color:#888;font-size:13px;font-weight:600;cursor:pointer;text-align:center}
-.type-btn.selected{border-color:#0064c8;color:#fff;background:#001a33}
-.lib-btn.selected{border-color:#e50914;color:#fff;background:#1e0000}
-.add-submit{width:100%;padding:14px;background:#e50914;color:#fff;font-size:16px;font-weight:700;border:none;border-radius:8px}
-.add-result{margin-top:12px;padding:12px;border-radius:8px;font-size:14px;text-align:center;display:none}
-.add-result.success{background:#0d2b0d;color:#4caf50;display:block}
-.search-result-item{padding:10px 14px;background:#1a1a1a;border-radius:6px;margin-bottom:6px;cursor:pointer;display:flex;align-items:center;gap:10px;border:1px solid #222}
-.ai-card{background:#1a1a1a;border-radius:8px;padding:12px;margin-bottom:8px;cursor:pointer;display:flex;gap:12px;align-items:flex-start;border:1px solid #222}
-.ai-card img{width:40px;height:60px;object-fit:cover;border-radius:4px;flex-shrink:0}
-.ai-poster-ph{width:40px;height:60px;background:#333;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:#666;font-weight:700;text-align:center}
-.ai-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:4px}
-.ai-reason{font-size:12px;color:#888;line-height:1.5}
-.ai-lib{font-size:10px;color:#e50914;font-weight:700;margin-top:4px;text-transform:uppercase}
-.ai-thinking{text-align:center;padding:32px;color:#555;font-size:14px}
+.movie-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.movie-card{cursor:pointer;border-radius:6px;overflow:hidden;background:#1a1a1a;aspect-ratio:2/3;display:flex;align-items:center;justify-content:center;text-align:center;font-size:10px;padding:5px;border:1px solid #222}
+.add-field{width:100%;padding:14px;border-radius:8px;background:#1e1e1e;color:#fff;border:none;margin-bottom:12px;font-size:16px}
+.add-submit{width:100%;padding:16px;background:#e50914;color:#fff;font-weight:700;border:none;border-radius:8px;font-size:16px}
+.ai-card{background:#1a1a1a;border-radius:8px;padding:15px;margin-bottom:10px;border:1px solid #333}
+.ai-title{font-size:17px;font-weight:800;color:#e50914;margin-bottom:4px}
+.ai-reason{font-size:14px;color:#bbb;line-height:1.4}
+#ai-result{margin-top:20px}
 </style>
 </head>
 <body>
+
 <div class="header">
-  <h1>Super Fun Awesome Family Movie Time Deluxe</h1>
+  <h1>Movie Deluxe</h1>
   <div class="tabs">
     <div class="tab active" onclick="switchTab('dvd')">DVD</div>
     <div class="tab" onclick="switchTab('digital')">Digital</div>
-    <div class="tab" onclick="switchTab('add')">+ Add</div>
     <div class="tab" onclick="switchTab('ai')">Ask AI</div>
   </div>
 </div>
+
 <div class="search-wrap" id="search-wrap">
-  <input type="search" id="search" placeholder="Search..." oninput="filterList()" autocomplete="off"/>
-  <button class="home-btn" onclick="clearSearch()">&#8962;</button>
-</div>
-<div id="stats"></div>
-<div id="tab-dvd" class="tab-content active"><div id="list-dvd"></div></div>
-<div id="tab-digital" class="tab-content"><div id="list-digital"></div></div>
-<div id="tab-add" class="tab-content">
-  <div class="add-wrap">
-    <h2>Add a Title</h2>
-    <input type="text" class="add-field" id="add-search" placeholder="Search for a movie or TV show..." oninput="searchForAdd()"/>
-    <div id="add-results"></div>
-    <div class="type-select">
-      <div class="type-btn selected" id="type-movie" onclick="selectType('movie')">Movie</div>
-      <div class="type-btn" id="type-tv" onclick="selectType('tv')">TV Show</div>
-    </div>
-    <div class="library-select">
-      <div class="lib-btn selected" id="lib-dvd" onclick="selectLib('dvd')">DVD Collection</div>
-      <div class="lib-btn" id="lib-digital" onclick="selectLib('digital')">Digital</div>
-    </div>
-    <button class="add-submit" id="add-btn" onclick="addTitle()" disabled>Select a title above</button>
-    <div class="add-result" id="add-result"></div>
-  </div>
-</div>
-<div id="tab-ai" class="tab-content">
-  <div class="add-wrap">
-    <h2>Ask Gemini AI</h2>
-    <textarea class="add-field" id="ai-prompt" style="height:90px;resize:none" placeholder="e.g. I want a disaster movie, or something funny..."></textarea>
-    <div class="ai-lib-select">
-      <div class="lib-btn selected" id="ai-lib-all" onclick="selectAiLib('all')">All</div>
-      <div class="lib-btn" id="ai-lib-dvd" onclick="selectAiLib('dvd')">DVD Only</div>
-      <div class="lib-btn" id="ai-lib-digital" onclick="selectAiLib('digital')">Digital Only</div>
-    </div>
-    <button class="add-submit" id="ai-btn" onclick="askGemini()">Ask Gemini</button>
-    <div id="ai-result" style="margin-top:16px"></div>
-  </div>
+  <input type="search" id="search" placeholder="Search collection..." oninput="filterList()"/>
+  <button class="home-btn" onclick="location.reload()">&#8962;</button>
 </div>
 
-<div class="modal-overlay" id="modal">
-  <div class="modal">
-    <div class="modal-close" onclick="closeModal()">X</div>
-    <div class="modal-backdrop-wrap"><img id="modal-backdrop" src="" alt=""/></div>
-    <div class="modal-body">
-      <div class="modal-poster-row">
-        <div class="modal-poster" id="modal-poster"></div>
-        <div class="modal-info">
-          <div class="modal-title" id="modal-title"></div>
-          <div class="modal-year" id="modal-year"></div>
-          <div class="modal-badges">
-            <div class="modal-score" id="modal-score" style="display:none"></div>
-            <div class="modal-tv-tag" id="modal-tv-tag" style="display:none">TV Show</div>
-          </div>
-        </div>
-      </div>
-      <div class="modal-overview" id="modal-overview">Loading...</div>
-      <div class="modal-tags" id="modal-tags"></div>
-      <button class="delete-btn" onclick="deleteCurrentMovie()">Remove from Collection</button>
-    </div>
-  </div>
+<div id="tab-dvd" class="tab-content active"><div class="movie-grid" id="list-dvd"></div></div>
+<div id="tab-digital" class="tab-content"><div class="movie-grid" id="list-digital"></div></div>
+
+<div id="tab-ai" class="tab-content">
+  <h2 style="margin-bottom:15px">Ask Gemini</h2>
+  <textarea class="add-field" id="ai-prompt" style="height:120px;resize:none" placeholder="e.g. Find me a comedy from my list that has Will Ferrell..."></textarea>
+  <button class="add-submit" id="ai-btn" onclick="askGemini()">Ask Gemini</button>
+  <div id="ai-result"></div>
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-const FB = { apiKey: "AIzaSyBBKgF3BXF3WOrVATkyH-ZR296KbPPG6m0", authDomain: "my-movie-catalog-2acdc.firebaseapp.com", projectId: "my-movie-catalog-2acdc", storageBucket: "my-movie-catalog-2acdc.firebasestorage.app", messagingSenderId: "653525309773", appId: "1:653525309773:web:d931c15ce41e6673f37f04" };
-const app = initializeApp(FB);
-const db = getFirestore(app);
+// LIBRARIES
 const TMDB = "8670d5dc76f371b2ad77f98e626dfba2";
-// FIXED API ENDPOINT AND KEY
-const GEMINI = "AQ.Ab8RN6JG0NQ0tObclQdyP9MTS6kHTevm0va1j8iANzx45zl3Mg";
-const IMG = "https://image.tmdb.org/t/p/";
+// YOUR NEW KEY INCORPORATED HERE
+const GEMINI_KEY = "AQ.Ab8RN6LIAHe_pUU_VinBWJM50ft4XQEKtx_KvpeS1plvYPCXag";
 
-const DVD_BASE = [{title:"21",type:"movie"},{title:"21 and Over",type:"movie"},{title:"22 Jump Street",type:"movie"},{title:"2012",type:"movie"},{title:"30 Minutes or Less",type:"movie"},{title:"50 First Dates",type:"movie"},{title:"A Christmas Story",type:"movie"},{title:"A Fistful of Dollars",type:"movie"},{title:"A Million Ways to Die in the West",type:"movie"},{title:"A Walk Among the Tombstones",type:"movie"},{title:"Abraham Lincoln Vampire Hunter",type:"movie"},{title:"Ad Astra",type:"movie"},{title:"After Earth",type:"movie"},{title:"Alien",type:"movie"},{title:"Alien Covenant",type:"movie"},{title:"Alien vs Predator",type:"movie"},{title:"Aliens",type:"movie"},{title:"American Gangster",type:"movie"},{title:"American History X",type:"movie"},{title:"American Hustle",type:"movie"},{title:"American Pie",type:"movie"},{title:"Annihilation",type:"movie"},{title:"Ant-Man and the Wasp",type:"movie"},{title:"Apollo 18",type:"movie"},{title:"Aquaman",type:"movie"},{title:"Austin Powers Goldmember",type:"movie"},{title:"Avengers Age of Ultron",type:"movie"},{title:"Avengers Endgame",type:"movie"},{title:"Avatar",type:"movie"},{title:"Batman vs Superman",type:"movie"},{title:"Battleship",type:"movie"},{title:"Baywatch",type:"movie"},{title:"Bee Movie",type:"movie"},{title:"Big Trouble in Little China",type:"movie"},{title:"Bill and Teds Bogus Journey",type:"movie"},{title:"Bill and Teds Excellent Adventure",type:"movie"},{title:"Black Panther",type:"movie"},{title:"Blade Runner",type:"movie"},{title:"Bleeding Steel",type:"movie"},{title:"Blended",type:"movie"},{title:"Bloodshot",type:"movie"},{title:"Blow",type:"movie"},{title:"Boondock Saints",type:"movie"},{title:"Brave",type:"movie"},{title:"Bumblebee",type:"movie"},{title:"Captain America The First Avenger",type:"movie"},{title:"Captain America The Winter Soldier",type:"movie"},{title:"Cast Away",type:"movie"},{title:"Central Intelligence",type:"movie"},{title:"Chicago",type:"movie"},{title:"Chips",type:"movie"},{title:"Civil War",type:"movie"},{title:"Clash of the Titans",type:"movie"},{title:"Cold Mountain",type:"movie"},{title:"Collateral",type:"movie"},{title:"Collateral Damage",type:"movie"},{title:"Conan the Barbarian",type:"movie"},{title:"Conan the Destroyer",type:"movie"},{title:"Constantine",type:"movie"},{title:"Contraband",type:"movie"},{title:"Dawn of the Dead",type:"movie"},{title:"Deadpool 2",type:"movie"},{title:"Deliver Us",type:"movie"},{title:"Despicable Me",type:"movie"},{title:"Despicable Me 2",type:"movie"},{title:"Despicable Me 3",type:"movie"},{title:"Die Hard",type:"movie"},{title:"Die Hard with a Vengeance",type:"movie"},{title:"Dirty Grandpa",type:"movie"},{title:"Divergent",type:"movie"},{title:"Doctor Strange",type:"movie"},{title:"Dolittle",type:"movie"},{title:"Dragonheart",type:"movie"},{title:"Due Date",type:"movie"},{title:"Edward Scissorhands",type:"movie"},{title:"Enemy of the State",type:"movie"},{title:"Escape Plan",type:"movie"},{title:"Eurotrip",type:"movie"},{title:"Everything Must Go",type:"movie"},{title:"Fantastic Beasts and Where to Find Them",type:"movie"},{title:"Fantastic Beasts The Crimes of Grindelwald",type:"movie"},{title:"Fast 5",type:"movie"},{title:"Fast 6",type:"movie"},{title:"Fast and Furious Hobbs and Shaw",type:"movie"},{title:"Fast Times at Ridgemont High",type:"movie"},{title:"Faster",type:"movie"},{title:"Fear and Loathing in Las Vegas",type:"movie"},{title:"Fight Club",type:"movie"},{title:"First Man",type:"movie"},{title:"Full Metal Jacket",type:"movie"},{title:"Furious 7",type:"movie"},{title:"G.I. Joe",type:"movie"},{title:"Game Night",type:"movie"},{title:"Gamer",type:"movie"},{title:"Get Hard",type:"movie"},{title:"Ghost in the Shell",type:"movie"},{title:"Ghost Protocol",type:"movie"},{title:"Godzilla",type:"movie"},{title:"Gone in 60 Seconds",type:"movie"},{title:"Goodfellas",type:"movie"},{title:"Goon",type:"movie"},{title:"Gravity",type:"movie"},{title:"Groundhog Day",type:"movie"},{title:"Grown Ups 2",type:"movie"},{title:"Guardians of the Galaxy Vol 2",type:"movie"},{title:"Hannibal",type:"movie"},{title:"Happy Feet",type:"movie"},{title:"Heartbreak Ridge",type:"movie"},{title:"Hell Ride",type:"movie"},{title:"Hercules",type:"movie"},{title:"Herbie",type:"movie"},{title:"Hitch",type:"movie"},{title:"Homefront",type:"movie"},{title:"Horrible Bosses",type:"movie"},{title:"I Am Legend",type:"movie"},{title:"Ice Age",type:"movie"},{title:"Ice Age The Meltdown",type:"movie"},{title:"Identity Thief",type:"movie"},{title:"Immortals",type:"movie"},{title:"Independence Day",type:"movie"},{title:"Insurgent",type:"movie"},{title:"Iron Man 3",type:"movie"},{title:"J. Edgar",type:"movie"},{title:"Jack Reacher",type:"movie"},{title:"Jack Reacher Never Go Back",type:"movie"},{title:"Jason Bourne",type:"movie"},{title:"Jayne Mansfields Car",type:"movie"},{title:"Jeepers Creepers",type:"movie"},{title:"Joe Dirt",type:"movie"},{title:"John Wick",type:"movie"},{title:"John Wick 2",type:"movie"},{title:"John Wick 3",type:"movie"},{title:"Jonah Hex",type:"movie"},{title:"Jumanji",type:"movie"},{title:"Jumanji Welcome to the Jungle",type:"movie"},{title:"Jurassic World",type:"movie"},{title:"Just Friends",type:"movie"},{title:"Justice League",type:"movie"},{title:"JW Fallen Kingdom",type:"movie"},{title:"Kick-Ass",type:"movie"},{title:"Kick-Ass 2",type:"movie"},{title:"Kill Bill Vol 1",type:"movie"},{title:"Kill Bill Vol 2",type:"movie"},{title:"Kingsman Secret Service",type:"movie"},{title:"Kiss the Girls",type:"movie"},{title:"Last Knights",type:"movie"},{title:"Leatherheads",type:"movie"},{title:"Lethal Weapon",type:"movie"},{title:"Lethal Weapon 2",type:"movie"},{title:"Lethal Weapon 3",type:"movie"},{title:"Lethal Weapon 4",type:"movie"},{title:"Little Nicky",type:"movie"},{title:"Logan",type:"movie"},{title:"Lone Survivor",type:"movie"},{title:"Mad Max Fury Road",type:"movie"},{title:"Masterminds",type:"movie"},{title:"Mechanic Resurrection",type:"movie"},{title:"Men in Black",type:"movie"},{title:"Million Dollar Baby",type:"movie"},{title:"Mission Impossible",type:"movie"},{title:"Mission Impossible Fallout",type:"movie"},{title:"Mission Impossible Rogue Nation",type:"movie"},{title:"Mr and Mrs Smith",type:"movie"},{title:"Mrs Doubtfire",type:"movie"},{title:"My Cousin Vinny",type:"movie"},{title:"Nacho Libre",type:"movie"},{title:"National Lampoons Christmas Vacation",type:"movie"},{title:"Natural Born Killers",type:"movie"},{title:"Need for Speed",type:"movie"},{title:"Next",type:"movie"},{title:"Nine Months",type:"movie"},{title:"Oblivion",type:"movie"},{title:"Oceans Eleven",type:"movie"},{title:"Once Upon a Time in Venice",type:"movie"},{title:"Orange County",type:"movie"},{title:"Our Family Wedding",type:"movie"},{title:"Out of the Furnace",type:"movie"},{title:"Outbreak",type:"movie"},{title:"Pacific Rim",type:"movie"},{title:"Pacific Rim Uprising",type:"movie"},{title:"Pain and Gain",type:"movie"},{title:"Passengers",type:"movie"},{title:"Pirates of the Caribbean Dead Men Tell No Tales",type:"movie"},{title:"Pirates of the Caribbean On Stranger Tides",type:"movie"},{title:"Point Break",type:"movie"},{title:"Pompeii",type:"movie"},{title:"Predator",type:"movie"},{title:"Predators",type:"movie"},{title:"Priest",type:"movie"},{title:"Psych 9",type:"movie"},{title:"Rain Man",type:"movie"},{title:"Rambo",type:"movie"},{title:"Rambo Last Blood",type:"movie"},{title:"Rampage",type:"movie"},{title:"Rampart",type:"movie"},{title:"Ready Player One",type:"movie"},{title:"Reservoir Dogs",type:"movie"},{title:"Revenge of the Nerds",type:"movie"},{title:"Ride Along",type:"movie"},{title:"Ride Along 2",type:"movie"},{title:"Risky Business",type:"movie"},{title:"Road House",type:"movie"},{title:"Robin Hood",type:"movie"},{title:"Rogue One",type:"movie"},{title:"Rush Hour",type:"movie"},{title:"Rush Hour 2",type:"movie"},{title:"Safe House",type:"movie"},{title:"Savages",type:"movie"},{title:"Scarface",type:"movie"},{title:"School of Rock",type:"movie"},{title:"Seventh Son",type:"movie"},{title:"Sex Tape",type:"movie"},{title:"Shallow Hal",type:"movie"},{title:"Shanghai Knights",type:"movie"},{title:"Shanghai Noon",type:"movie"},{title:"Sherlock Holmes A Game of Shadows",type:"movie"},{title:"Snow White and the Huntsman",type:"movie"},{title:"Solo A Star Wars Story",type:"movie"},{title:"Spaceballs",type:"movie"},{title:"Speed",type:"movie"},{title:"Star Wars The Force Awakens",type:"movie"},{title:"Star Wars The Last Jedi",type:"movie"},{title:"Super 8",type:"movie"},{title:"Super Troopers",type:"movie"},{title:"Super Troopers 2",type:"movie"},{title:"Survival of the Dead",type:"movie"},{title:"Tag",type:"movie"},{title:"Taken",type:"movie"},{title:"Talladega Nights",type:"movie"},{title:"Tammy",type:"movie"},{title:"Ted",type:"movie"},{title:"Tenet",type:"movie"},{title:"Terminator Genisys",type:"movie"},{title:"Texas Chainsaw Massacre",type:"movie"},{title:"The A-Team",type:"movie"},{title:"The Accountant",type:"movie"},{title:"The Aviator",type:"movie"},{title:"The Breakfast Club",type:"movie"},{title:"The Bucket List",type:"movie"},{title:"The Client",type:"movie"},{title:"The Dark Knight Rises",type:"movie"},{title:"The Day After Tomorrow",type:"movie"},{title:"The Dead Girl",type:"movie"},{title:"The Dukes of Hazard",type:"movie"},{title:"The Equalizer",type:"movie"},{title:"The Expendables 3",type:"movie"},{title:"The Fast and the Furious Tokyo Drift",type:"movie"},{title:"The Fate of the Furious",type:"movie"},{title:"The Fighter",type:"movie"},{title:"The Gambler",type:"movie"},{title:"The Gentlemen",type:"movie"},{title:"The Glass House",type:"movie"},{title:"The Green Mile",type:"movie"},{title:"The Grinch",type:"movie"},{title:"The Hangover",type:"movie"},{title:"The Hangover Part 2",type:"movie"},{title:"The Hangover Part 3",type:"movie"},{title:"The Heat",type:"movie"},{title:"The House Bunny",type:"movie"},{title:"The Hunger Games",type:"movie"},{title:"The Hunger Games Catching Fire",type:"movie"},{title:"The Hunger Games Mockingjay",type:"movie"},{title:"The Hunger Games Mockingjay Pt 2",type:"movie"},{title:"The Hungover Games",type:"movie"},{title:"The Ideas of March",type:"movie"},{title:"The Karate Kid",type:"movie"},{title:"The Lego Batman Movie",type:"movie"},{title:"The Lorax",type:"movie"},{title:"The Losers",type:"movie"},{title:"The Magnificent Seven",type:"movie"},{title:"The Martian",type:"movie"},{title:"The Mechanic",type:"movie"},{title:"The Meg",type:"movie"},{title:"The Monuments Men",type:"movie"},{title:"The Mule",type:"movie"},{title:"The Musketeer",type:"movie"},{title:"The Never-ending Story",type:"movie"},{title:"The Nice Guys",type:"movie"},{title:"The Outlaw",type:"movie"},{title:"The Outsiders",type:"movie"},{title:"The Quest",type:"movie"},{title:"The Quick and the Dead",type:"movie"},{title:"The Rundown",type:"movie"},{title:"The Shawshank Redemption",type:"movie"},{title:"The Shining",type:"movie"},{title:"The Silence of the Lambs",type:"movie"},{title:"The Son of No One",type:"movie"},{title:"The Sorcerers Apprentice",type:"movie"},{title:"The Tax Collector",type:"movie"},{title:"The Terminator",type:"movie"},{title:"The Thing",type:"movie"},{title:"The Town",type:"movie"},{title:"The War with Grandpa",type:"movie"},{title:"The Wolf of Wall Street",type:"movie"},{title:"The Wolverine",type:"movie"},{title:"The Woodsman",type:"movie"},{title:"The Worlds End",type:"movie"},{title:"The Wrestler",type:"movie"},{title:"The Zodiac",type:"movie"},{title:"Thelma and Louise",type:"movie"},{title:"This is the End",type:"movie"},{title:"Thor Ragnarok",type:"movie"},{title:"Three Kings",type:"movie"},{title:"Tinker Tailor Soldier Spy",type:"movie"},{title:"Tomb Raider",type:"movie"},{title:"Tower Heist",type:"movie"},{title:"Transcendence",type:"movie"},{title:"Transformers",type:"movie"},{title:"Transformers The Last Knight",type:"movie"},{title:"Trouble with the Curve",type:"movie"},{title:"Tropic Thunder",type:"movie"},{title:"Troy",type:"movie"},{title:"Twister",type:"movie"},{title:"Unforgiven",type:"movie"},{title:"Vacation",type:"movie"},{title:"War Dogs",type:"movie"},{title:"Warrior",type:"movie"},{title:"Were the Millers",type:"movie"},{title:"Weekend at Bernies",type:"movie"},{title:"When Harry Met Sally",type:"movie"},{title:"White Men Cant Jump",type:"movie"},{title:"Why Him",type:"movie"},{title:"Wild Card",type:"movie"},{title:"Wonder Woman",type:"movie"},{title:"World War Z",type:"movie"},{title:"Wyatt Earp",type:"movie"},{title:"X-Men",type:"movie"},{title:"X-Men Apocalypse",type:"movie"},{title:"X-Men Last Stand",type:"movie"},{title:"X-Men Origins Wolverine",type:"movie"},{title:"X2",type:"movie"},{title:"Yogi Bear",type:"movie"},{title:"Young Guns",type:"movie"},{title:"Zodiac",type:"movie"},{title:"11.22.63",type:"tv"}];
-const DIG_BASE = [{title:"65",type:"movie"},{title:"Airplane",type:"movie"},{title:"Anaconda",type:"movie"},{title:"Babylon",type:"movie"},{title:"The Bad Guys 2",type:"movie"},{title:"Beetlejuice",type:"movie"},{title:"Beetlejuice Beetlejuice",type:"movie"},{title:"Black Adam",type:"movie"},{title:"Blade",type:"movie"},{title:"Blade 2",type:"movie"},{title:"Blade Trinity",type:"movie"},{title:"Bumblebee",type:"movie"},{title:"Casper",type:"movie"},{title:"Civil War",type:"movie"},{title:"Cocaine Bear",type:"movie"},{title:"Daffy Ducks Quackbusters",type:"movie"},{title:"Despicable Me 4",type:"movie"},{title:"Django Unchained",type:"movie"},{title:"Dracula Dead and Loving It",type:"movie"},{title:"Elemental",type:"movie"},{title:"Fatman",type:"movie"},{title:"A Few Good Men",type:"movie"},{title:"Final Destination",type:"movie"},{title:"Ghost Rider",type:"movie"},{title:"Ghost Rider Spirit of Vengeance",type:"movie"},{title:"Gone in 60 Seconds",type:"movie"},{title:"Indiana Jones Raiders of the Lost Ark",type:"movie"},{title:"Indiana Jones and the Temple of Doom",type:"movie"},{title:"Indiana Jones and the Last Crusade",type:"movie"},{title:"Indiana Jones and the Dial of Destiny",type:"movie"},{title:"Indiana Jones and the Kingdom of the Crystal Skull",type:"movie"},{title:"Inside Out 2",type:"movie"},{title:"The Italian Job",type:"movie"},{title:"John Wick 4",type:"movie"},{title:"Jurassic Park",type:"movie"},{title:"Jurassic Park 3",type:"movie"},{title:"Jurassic Park The Lost World",type:"movie"},{title:"Jurassic World",type:"movie"},{title:"Jurassic World Dominion",type:"movie"},{title:"Jurassic World Fallen Kingdom",type:"movie"},{title:"Jurassic World Rebirth",type:"movie"},{title:"The Lego Movie",type:"movie"},{title:"The Lego Movie The Second Part",type:"movie"},{title:"The Lego Ninjago Movie",type:"movie"},{title:"The Lego Batman Movie",type:"movie"},{title:"Men in Black",type:"movie"},{title:"Mickey 17",type:"movie"},{title:"Mortal Kombat",type:"movie"},{title:"Mummies",type:"movie"},{title:"My Girl",type:"movie"},{title:"National Lampoons Christmas Vacation",type:"movie"},{title:"Novacaine",type:"movie"},{title:"Odd Thomas",type:"movie"},{title:"Scrooged",type:"movie"},{title:"Small Soldiers",type:"movie"},{title:"Snatch",type:"movie"},{title:"Spider-Man No Way Home",type:"movie"},{title:"The Legend of Sleepy Hollow",type:"movie"},{title:"The SpongeBob Movie Sponge Out of Water",type:"movie"},{title:"Starship Troopers",type:"movie"},{title:"Top Gun",type:"movie"},{title:"Top Gun Maverick",type:"movie"},{title:"Top Secret",type:"movie"},{title:"Transformers",type:"movie"},{title:"Transformers Revenge of the Fallen",type:"movie"},{title:"Transformers Dark of the Moon",type:"movie"},{title:"Transformers Age of Extinction",type:"movie"},{title:"Transformers The Last Knight",type:"movie"},{title:"Transformers Rise of the Beasts",type:"movie"},{title:"Venom The Last Dance",type:"movie"},{title:"Violent Night",type:"movie"},{title:"Weekend at Bernies",type:"movie"},{title:"Zootopia 2",type:"movie"},{title:"Supernatural",type:"tv"}];
+const DVD_BASE = ["21", "22 Jump Street", "2012", "50 First Dates", "Alien", "Aliens", "Avatar", "Batman vs Superman", "Black Panther", "Die Hard", "Fast 5", "Gladiator", "Inception", "Iron Man", "John Wick", "Jurassic World", "Logan", "The Matrix", "Predator", "Rambo", "Star Wars", "The Dark Knight", "Transformers", "X-Men"];
+const DIG_BASE = ["65", "Airplane", "Beetlejuice", "Blade", "Civil War", "Django Unchained", "Indiana Jones", "Inside Out 2", "Jurassic Park", "The Lego Movie", "Top Gun Maverick", "Venom"];
 
-let dvdData=[], digData=[], currentTab="dvd", currentModalItem=null, selectedLib="dvd", selectedAddMovie=null, addTimer=null, selectedType="movie", aiLib="all";
-let fbDvdAdded=[], fbDvdDeleted=[], fbDigAdded=[], fbDigDeleted=[];
+let currentTab = "dvd";
 
-function sortArr(arr){return arr.slice().sort((a,b)=>{const c=s=>(s.title||s).replace(/^(The|A|An) /i,"").toLowerCase();return c(a)<c(b)?-1:c(a)>c(b)?1:0;});}
-function lgr(title){const t=title||"";return /[0-9]/.test(t[0])?"#":t[0].toUpperCase();}
-function mkId(t){return t.replace(/[^a-zA-Z0-9]/g,"_");}
-
-function renderGrid(list,elId){
-  const el=document.getElementById(elId);
-  if(!list.length){el.innerHTML='<div class="no-results">No titles found</div>';return;}
-  const groups={};
-  list.forEach(item=>{const g=lgr(item.title);if(!groups[g])groups[g]=[];groups[g].push(item);});
-  const order=Object.keys(groups).sort((a,b)=>{if(a==="#")return -1;if(b==="#")return 1;return a.localeCompare(b);});
-  let html="";
-  order.forEach(g=>{
-    html+='<div class="section-header">'+g+'</div><div class="movie-grid">';
-    groups[g].forEach(item=>{
-      const abbr=item.title.substring(0,3).toUpperCase();
-      const inner=item.poster?'<img src="'+item.poster+'" alt="" loading="lazy"/>':'<div class="placeholder"><div class="abbr">'+abbr+'</div><div class="ptitle">'+item.title+'</div></div>';
-      const nb=item.custom?'<div class="new-badge">NEW</div>':'';
-      const tvb=item.type==="tv"?'<div class="tv-card-badge">TV</div>':'';
-      html+='<div class="movie-card" id="card-'+elId+'-'+item.id+'" data-tab="'+item.tab+'" data-id="'+item.id+'" onclick="showDetail(this.dataset.tab,this.dataset.id)"><div class="num-badge">'+item.num+'</div>'+nb+tvb+inner+'</div>';
-    });
-    html+='</div>';
-  });
-  el.innerHTML=html;
+function renderGrids() {
+  document.getElementById('list-dvd').innerHTML = DVD_BASE.map(t => `<div class="movie-card">${t}</div>`).join('');
+  document.getElementById('list-digital').innerHTML = DIG_BASE.map(t => `<div class="movie-card">${t}</div>`).join('');
 }
 
-function rebuild(){
-  const dvdTitles=DVD_BASE.filter(b=>!fbDvdDeleted.includes(b.title));
-  let dvdAll=[...dvdTitles];
-  fbDvdAdded.forEach(item=>dvdAll.push({title:item.title,poster:item.poster||null,custom:true,tab:"dvd",_docId:item._docId,tmdbId:item.tmdbId,type:item.type||"movie"}));
-  dvdAll=sortArr(dvdAll);
-  dvdData=dvdAll.map((item,i)=>({...item,tab:"dvd",num:i+1,id:mkId(item.title)}));
-  const digTitles=DIG_BASE.filter(b=>!fbDigDeleted.includes(b.title));
-  let digAll=[...digTitles];
-  fbDigAdded.forEach(item=>digAll.push({title:item.title,poster:item.poster||null,custom:true,tab:"digital",_docId:item._docId,tmdbId:item.tmdbId,type:item.type||"movie"}));
-  digAll=sortArr(digAll);
-  digData=digAll.map((item,i)=>({...item,tab:"digital",num:i+1,id:mkId(item.title)}));
-  renderGrid(dvdData,"list-dvd");
-  renderGrid(digData,"list-digital");
-  const currentData=currentTab==="dvd"?dvdData:digData;
-  if(document.getElementById("stats")) document.getElementById("stats").textContent=currentData.length+" titles";
-  loadPosters(dvdData,"list-dvd");
-  loadPosters(digData,"list-digital");
-}
-
-onSnapshot(collection(db,"dvd_added"),snap=>{fbDvdAdded=snap.docs.map(d=>({...d.data(),_docId:d.id}));rebuild();});
-onSnapshot(collection(db,"dvd_deleted"),snap=>{fbDvdDeleted=snap.docs.map(d=>d.data().title);rebuild();});
-onSnapshot(collection(db,"digital_added"),snap=>{fbDigAdded=snap.docs.map(d=>({...d.data(),_docId:d.id}));rebuild();});
-onSnapshot(collection(db,"digital_deleted"),snap=>{fbDigDeleted=snap.docs.map(d=>d.data().title);rebuild();});
-
-function loadPosters(data,elId){
-  let i=0;
-  function next(){
-    if(i>=data.length)return;
-    const item=data[i++];
-    if(item.poster){setTimeout(next,30);return;}
-    const q=item.title.replace(/^(The|A|An) /i,"").replace(/[^a-zA-Z0-9 ]/g,"").trim();
-    const ep=item.type==="tv"?"search/tv":"search/movie";
-    fetch("https://api.themoviedb.org/3/"+ep+"?api_key="+TMDB+"&query="+encodeURIComponent(q))
-    .then(r=>r.json()).then(d=>{
-      if(d.results&&d.results.length>0&&d.results[0].poster_path){
-        item.poster=IMG+"w185"+d.results[0].poster_path;
-        const card=document.getElementById("card-"+elId+"-"+item.id);
-        if(card){
-          const nb=item.custom?'<div class="new-badge">NEW</div>':'';
-          const tvb=item.type==="tv"?'<div class="tv-card-badge">TV</div>':'';
-          card.innerHTML='<div class="num-badge">'+item.num+'</div>'+nb+tvb+'<img src="'+item.poster+'" alt=""/>';
-        }
-      }
-    }).catch(()=>{}).then(()=>setTimeout(next,80));
-  }
-  next();
-}
-
-window.switchTab=function(tab){
-  currentTab=tab;
-  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-  document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));
-  const tabs=["dvd","digital","add","ai"];
-  document.querySelectorAll(".tab")[tabs.indexOf(tab)].classList.add("active");
-  document.getElementById("tab-"+tab).classList.add("active");
-  const hide=tab==="add"||tab==="ai";
-  document.getElementById("search-wrap").style.display=hide?"none":"flex";
-  document.getElementById("stats").style.display=hide?"none":"block";
-  if(!hide){document.getElementById("search").value="";const data=tab==="dvd"?dvdData:digData;document.getElementById("stats").textContent=data.length+" titles";}
+window.switchTab = (t) => {
+  currentTab = t;
+  document.querySelectorAll('.tab').forEach((el, i) => el.classList.toggle('active', ['dvd','digital','ai'][i] === t));
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.toggle('active', el.id === 'tab-'+t));
+  document.getElementById('search-wrap').style.display = t === 'ai' ? 'none' : 'flex';
 };
 
-window.clearSearch=function(){document.getElementById("search").value="";filterList();};
-window.filterList=function(){
-  const q=document.getElementById("search").value.toLowerCase();
-  const data=currentTab==="dvd"?dvdData:digData;
-  const elId=currentTab==="dvd"?"list-dvd":"list-digital";
-  const filtered=q?data.filter(d=>d.title.toLowerCase().includes(q)):data.slice();
-  renderGrid(filtered,elId);
-};
-
-window.showDetail=function(tab,id){
-  const data=tab==="dvd"?dvdData:digData;
-  const item=data.find(d=>d.id===id);
-  if(!item)return;
-  currentModalItem=item;
-  document.getElementById("modal-title").textContent=item.title;
-  document.getElementById("modal-overview").textContent="Loading...";
-  document.getElementById("modal-tags").innerHTML="";
-  document.getElementById("modal-backdrop").src="";
-  document.getElementById("modal").classList.add("open");
-  const q=item.title.replace(/^(The|A|An) /i,"").replace(/[^a-zA-Z0-9 ]/g,"").trim();
-  const ep=item.type==="tv"?"search/tv":"search/movie";
-  fetch("https://api.themoviedb.org/3/"+ep+"?api_key="+TMDB+"&query="+encodeURIComponent(q))
-  .then(r=>r.json()).then(d=>{
-    if(d.results&&d.results.length>0){
-      const m=d.results[0];
-      document.getElementById("modal-overview").textContent=m.overview||"No synopsis.";
-      if(m.backdrop_path)document.getElementById("modal-backdrop").src=IMG+"w780"+m.backdrop_path;
-      if(m.poster_path)document.getElementById("modal-poster").innerHTML='<img src="'+IMG+"w185"+m.poster_path+'" alt=""/>';
-    }
-  });
-};
-
-window.closeModal=function(){document.getElementById("modal").classList.remove("open");currentModalItem=null;};
-
-window.deleteCurrentMovie=function(){
-  if(!currentModalItem)return;
-  const item=currentModalItem;
-  if(!confirm('Remove "'+item.title+'"?'))return;
-  const colName=item.tab==="dvd"?(item.custom?"dvd_added":"dvd_deleted"):(item.custom?"digital_added":"digital_deleted");
-  if(item.custom) deleteDoc(doc(db,colName,item._docId)).then(()=>closeModal());
-  else setDoc(doc(db,colName,mkId(item.title)),{title:item.title}).then(()=>closeModal());
-};
-
-window.searchForAdd=function(){
-  clearTimeout(addTimer);
-  const q=document.getElementById("add-search").value.trim();
-  if(q.length<2)return;
-  addTimer=setTimeout(()=>{
-    const ep=selectedType==="tv"?"search/tv":"search/movie";
-    fetch("https://api.themoviedb.org/3/"+ep+"?api_key="+TMDB+"&query="+encodeURIComponent(q))
-    .then(r=>r.json()).then(d=>{
-      let html="";
-      d.results.slice(0,5).forEach(m=>{
-        const tk=selectedType==="tv"?"name":"title";
-        const mStr=JSON.stringify({id:m.id,title:m[tk],poster_path:m.poster_path,type:selectedType}).replace(/"/g,"&quot;");
-        html+='<div class="search-result-item" onclick="selectAddMovie(JSON.parse(this.dataset.m))" data-m="'+mStr+'"><div class="sri-title">'+m[tk]+'</div></div>';
-      });
-      document.getElementById("add-results").innerHTML=html;
-    });
-  },400);
-};
-
-window.selectAddMovie=function(m){
-  selectedAddMovie=m;
-  document.getElementById("add-search").value=m.title;
-  document.getElementById("add-results").innerHTML="";
-  document.getElementById("add-btn").disabled=false;
-};
-
-window.addTitle=function(){
-  const colName=selectedLib==="dvd"?"dvd_added":"digital_added";
-  const poster=selectedAddMovie.poster_path?IMG+"w185"+selectedAddMovie.poster_path:null;
-  setDoc(doc(db,colName,mkId(selectedAddMovie.title)+"_"+selectedAddMovie.id),{title:selectedAddMovie.title,poster:poster,tmdbId:selectedAddMovie.id,type:selectedAddMovie.type})
-  .then(()=>{
-    const res=document.getElementById("add-result");
-    res.className="add-result success";
-    res.textContent="Added!";
-    setTimeout(()=>res.style.display="none",2000);
-  });
-};
-
-window.selectType=t=>{selectedType=t;document.getElementById("type-movie").classList.toggle("selected",t==="movie");document.getElementById("type-tv").classList.toggle("selected",t==="tv");};
-window.selectLib=l=>{selectedLib=l;document.getElementById("lib-dvd").classList.toggle("selected",l==="dvd");document.getElementById("lib-digital").classList.toggle("selected",l==="digital");};
-window.selectAiLib=l=>{aiLib=l;document.getElementById("ai-lib-all").classList.toggle("selected",l==="all");document.getElementById("ai-lib-dvd").classList.toggle("selected",l==="dvd");document.getElementById("ai-lib-digital").classList.toggle("selected",l==="digital");};
-
-// ERROR-PROOF GEMINI LOGIC
 window.askGemini = async function() {
-  const promptEl = document.getElementById("ai-prompt");
+  const prompt = document.getElementById("ai-prompt").value.trim();
   const resultEl = document.getElementById("ai-result");
   const btn = document.getElementById("ai-btn");
-  const prompt = promptEl.value.trim();
-  if (!prompt) { alert("Describe what you're in the mood for!"); return; }
-
-  btn.disabled = true; 
-  btn.textContent = "Thinking...";
-  resultEl.innerHTML = '<div class="ai-thinking">Gemini is searching your collection...</div>';
-
-  const allTitles = aiLib === "dvd" ? dvdData : aiLib === "digital" ? digData : [...dvdData, ...digData];
-  const titleList = allTitles.map(t => t.title + " (" + t.tab + ")").join(", ");
   
-  const gPrompt = `You are a movie recommendation assistant. The user has these titles: ${titleList}. User says: "${prompt}". Suggest up to 5 titles from their collection only. Return ONLY a raw JSON object, no markdown, no backticks: {"suggestions":[{"title":"exact title","reason":"one sentence","library":"dvd or digital"}]}`;
+  if (!prompt) return alert("Please enter a request.");
+
+  btn.disabled = true;
+  btn.textContent = "Searching Library...";
+  resultEl.innerHTML = "Thinking...";
+
+  const titles = [...DVD_BASE, ...DIG_BASE].join(", ");
+  const gPrompt = `You are a movie expert. Based ONLY on this list: ${titles}, answer the request: "${prompt}". Suggest 3 movies. Return ONLY JSON: {"suggestions":[{"title":"Movie Name","reason":"Short explanation"}]}`;
 
   try {
-    // UPDATED ENDPOINT TO V1 AND FIXED MODEL NAME
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI}`, {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ contents: [{ parts: [{ text: gPrompt }] }] })
@@ -359,40 +100,31 @@ window.askGemini = async function() {
 
     const data = await res.json();
 
-    if (data.error) {
-      throw new Error(`Google API Error: ${data.error.message}`);
-    }
+    // Check for Google-side errors (New AQ Key issues)
+    if (data.error) throw new Error(data.error.message);
 
-    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
-      throw new Error("Invalid API response. Check your API key or quota.");
-    }
+    const text = data.candidates[0].content.parts[0].text.replace(/```json|```/g, "").trim();
+    const json = JSON.parse(text);
 
-    let text = data.candidates[0].content.parts[0].text;
-    const cleanJson = text.replace(/```json/g, "").replace(/```/g, "").trim();
-    const parsed = JSON.parse(cleanJson);
-    const suggestions = parsed.suggestions || [];
+    resultEl.innerHTML = json.suggestions.map(s => `
+      <div class="ai-card">
+        <div class="ai-title">${s.title}</div>
+        <div class="ai-reason">${s.reason}</div>
+      </div>
+    `).join('');
 
-    if (!suggestions.length) {
-      resultEl.innerHTML = '<div class="ai-thinking">No matches found. Try a different description!</div>';
-    } else {
-      let html = "";
-      suggestions.forEach(s => {
-        const found = allTitles.find(t => t.title.toLowerCase() === s.title.toLowerCase());
-        const poster = found && found.poster ? `<img src="${found.poster}"/>` : `<div class="ai-poster-ph">${s.title.substring(0,3).toUpperCase()}</div>`;
-        const ftab = found ? found.tab : s.library;
-        const fid = found ? found.id : '';
-        html += `<div class="ai-card" onclick="showDetail('${ftab}','${fid}')">${poster}<div><div class="ai-title">${s.title}</div><div class="ai-reason">${s.reason}</div><div class="ai-lib">${ftab.toUpperCase()}</div></div></div>`;
-      });
-      resultEl.innerHTML = html;
-    }
   } catch (e) {
-    resultEl.innerHTML = `<div class="ai-thinking" style="color:#e50914">Error: ${e.message}. Try again!</div>`;
-    console.error("Gemini error:", e);
+    resultEl.innerHTML = `<div style="color:#e50914; border:1px solid #e50914; padding:10px; border-radius:8px;">
+      <strong>Sync Error:</strong> ${e.message}<br>
+      <small>Ensure 'Generative Language API' is enabled in Google AI Studio.</small>
+    </div>`;
   } finally {
-    btn.disabled = false; 
+    btn.disabled = false;
     btn.textContent = "Ask Gemini";
   }
 };
+
+renderGrids();
 </script>
 </body>
 </html>
